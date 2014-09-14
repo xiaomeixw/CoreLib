@@ -113,40 +113,37 @@ public class ScaleImageView extends ImageView {
     /**
      * @see android.widget.ImageView#setImageBitmap(android.graphics.Bitmap)
      */
-    @Override
-    public void setImageBitmap(Bitmap bm) {
-        if (mCurrentBitmap != bm) {
-            mCurrentBitmap = bm;
-            invalidate();
-        }
-        
-        // 这里不需要调用父类的方法，因为我们打算自绘制图片。
-        //super.setImageBitmap(mCurrentBitmap);
-        
-        if (mImageChangeListener != null) {
-            mImageChangeListener.changed((mCurrentBitmap == null));
-        }
-    }
+//    @Override
+//    public void setImageBitmap(Bitmap bm) {
+//        if (mCurrentBitmap != bm) {
+//            mCurrentBitmap = bm;
+//            invalidate();
+//        }
+//        
+//        // 这里不需要调用父类的方法，因为我们打算自绘制图片。
+//        //super.setImageBitmap(mCurrentBitmap);
+//        
+//        if (mImageChangeListener != null) {
+//            mImageChangeListener.changed((mCurrentBitmap == null));
+//        }
+//    }
 
-    /**
-     * @see android.widget.ImageView#setImageDrawable(android.graphics.drawable.Drawable)
-     */
-    @Override
-    public void setImageDrawable(Drawable d) {
-        
-        // 这里不需要调用父类的方法，因为我们打算自绘制图片。
-        //super.setImageDrawable(d);
-        
-        if (d instanceof BitmapDrawable) {
-            mCurrentBitmap = ((BitmapDrawable) d).getBitmap();
-        } else {
-            mCurrentBitmap = null;
-        }
-        
-        if (mImageChangeListener != null) {
-            mImageChangeListener.changed((d == null));
-        }
-    }
+//    @Override
+//    public void setImageDrawable(Drawable d) {
+//        
+//        // 这里不需要调用父类的方法，因为我们打算自绘制图片。
+//        //super.setImageDrawable(d);
+//        
+//        if (d instanceof BitmapDrawable) {
+//            mCurrentBitmap = ((BitmapDrawable) d).getBitmap();
+//        } else {
+//            mCurrentBitmap = null;
+//        }
+//        
+//        if (mImageChangeListener != null) {
+//            mImageChangeListener.changed((d == null));
+//        }
+//    }
 
     /**
      * 图片改变的监听器接口
@@ -233,6 +230,8 @@ public class ScaleImageView extends ImageView {
                 mEmptyDrawableRect.offsetTo(left, top);
                 mEmptyDrawable.setBounds(mEmptyDrawableRect);
                 mEmptyDrawable.draw(canvas);
+            } else {
+                super.onDraw(canvas);
             }
         } else {
             if (null == mFrame) {

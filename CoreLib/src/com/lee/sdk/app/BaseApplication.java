@@ -19,6 +19,8 @@ package com.lee.sdk.app;
 import android.app.Activity;
 import android.app.Application;
 import android.content.Context;
+import android.os.Handler;
+import android.os.Looper;
 
 /**
  * The base application class.
@@ -27,15 +29,12 @@ import android.content.Context;
  * @date 2012/11/12
  */
 public class BaseApplication extends Application {
-    /**
-     * The application context.
-     */
+    /**The application context.*/
     private static Context mAppContext = null;
-
-    /**
-     * The top activity.
-     */
+    /**The top activity.*/
     private Activity mTopActivity = null;
+    /** 主线程的Handler */
+    private static Handler sMainHandler;
 
     /**
      * This static method returns the application context.
@@ -68,5 +67,26 @@ public class BaseApplication extends Application {
      */
     public Activity getTopActivity() {
         return mTopActivity;
+    }
+
+    /**
+     * 得到关联到主线程的Handler
+     * 
+     * <p>
+     * 注意：这个Handler通常只是用来执行post操作。
+     * </p>
+     * 
+     * @return handler
+     */
+    public static Handler getMainHandler() {
+        if (null == sMainHandler) {
+            synchronized (BaseApplication.class) {
+                if (null == sMainHandler) {
+                    sMainHandler = new Handler(Looper.getMainLooper());
+                }
+            }
+        }
+
+        return sMainHandler;
     }
 }

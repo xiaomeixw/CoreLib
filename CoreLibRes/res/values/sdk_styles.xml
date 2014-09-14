@@ -11,4 +11,8 @@
         <item name="android:textColor">#333333</item>
     </style>
 
+    <style name="menu_style">
+        <item name="android:windowEnterAnimation">@anim/sdk_menu_open</item>
+        <item name="android:windowExitAnimation">@anim/sdk_menu_close</item>
+    </style>
 </resources>

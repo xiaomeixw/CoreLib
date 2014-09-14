@@ -95,7 +95,9 @@ public class ImageAlbumView extends FrameLayout implements IAsyncView {
 
     @Override
     public void setImageDrawable(Drawable drawable) {
-        
+        if (null != mImageView ) {
+            mImageView.setImageDrawable(drawable);
+        }
     }
 
     private Drawable mDrawable = null;

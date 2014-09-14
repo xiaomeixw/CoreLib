@@ -39,8 +39,11 @@ public class ImageAlbumActivity extends GABaseActivity {
         int rightPadding = leftPadding;
         int horizontalSpacing = leftPadding;
         int color = Color.argb(14, 0, 0, 0);
-        mImageLoader = ImageLoader.Builder.newInstance(this).setUseDiskCache(true)
-                .setDiskCacheDir(Utils.getImageCacheDirectory(this)).setMaxCachePercent(0.3f).build();
+        mImageLoader = ImageLoader.Builder.newInstance(this)
+                .setUseDiskCache(true)
+                .setDiskCacheDir(Utils.getImageCacheDirectory(this))
+                .setFadeInBitmap(true)
+                .setMaxCachePercent(0.3f).build();
         mImageLoader.setOnProcessBitmapListener(new OnProcessBitmapListener() {
             @Override
             public Bitmap onProcessBitmap(Object data) {

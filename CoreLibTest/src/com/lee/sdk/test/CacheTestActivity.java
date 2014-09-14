@@ -98,7 +98,7 @@ public class CacheTestActivity extends GABaseActivity {
         mGridView.setColumnWidth(mWidth);
         
         mImageLoader = ImageLoader.Builder.newInstance(this)
-                .setMaxCachePercent(0.3f).build();
+                .setMaxCachePercent(0.3f).setFadeInBitmap(true).build();
         mImageLoader.setOnProcessBitmapListener(new OnProcessBitmapListener() {
             @Override
             public Bitmap onProcessBitmap(Object data) {

@@ -47,12 +47,11 @@ public final class StorageUtils {
 
     /** 根据系统时间生成文件名的格式 */
     private static SimpleDateFormat sDateFormat = null;
-    
+
     /**
      * 根据系统时间生成文件名
      * 
-     * @param suffix
-     *            文件后缀名
+     * @param suffix 文件后缀名
      * @return 文件名
      */
     public static synchronized String createFileName(String suffix) {
@@ -62,7 +61,7 @@ public final class StorageUtils {
         Date date = new Date();
         return String.format("%s.%s", sDateFormat.format(date), suffix);
     }
-    
+
     /**
      * 判断外部存储是否可写
      * 
@@ -96,12 +95,11 @@ public final class StorageUtils {
         }
         return writealbe;
     }
-    
+
     /**
      * 确定SD卡缓存路径在使用前已经存在.
      * 
-     * @param dir
-     *            目录
+     * @param dir 目录
      * @return 是否建立成功
      */
     public static boolean ensureDirectoryExist(final File dir) {

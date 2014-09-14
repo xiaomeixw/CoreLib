@@ -1,0 +1,57 @@
+<?xml version="1.0" encoding="utf-8"?>
+<merge xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="50dp" >
+
+    <!-- 添加一个文本，让标题栏居中 -->
+    <TextView
+        android:id="@+id/title_text_center"
+        style="@style/title_bar_title"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout_gravity="center"
+        android:ellipsize="end"
+        android:gravity="center"
+        android:maxEms="8"
+        android:paddingLeft="50dip"
+        android:paddingRight="50dip"
+        android:singleLine="true" />
+    <!-- 标题栏右侧功能区，包括返回箭头和标题文字 -->
+
+    <TextView
+        android:id="@+id/title_text"
+        style="@style/title_bar_title"
+        android:layout_width="wrap_content"
+        android:layout_height="match_parent"
+        android:layout_alignParentLeft="true"
+        android:layout_gravity="center_vertical"
+        android:drawableLeft="@drawable/sdk_back_white"
+        android:background="@drawable/sdk_action_bar_item_bg_selector"
+        android:drawablePadding="2dip"
+        android:ellipsize="end"
+        android:gravity="center_vertical"
+        android:maxEms="8"
+        android:minWidth="50dp"
+        android:paddingLeft="8dip"
+        android:paddingRight="5dip"
+        android:singleLine="true" />
+
+    <LinearLayout
+        android:id="@+id/titlebar_right_menu"
+        android:layout_width="50dp"
+        android:layout_height="match_parent"
+        android:layout_alignParentRight="true"
+        android:background="@drawable/sdk_action_bar_item_bg_selector"
+        android:gravity="center"
+        android:visibility="gone" >
+
+        <ImageView
+            android:id="@+id/titlebar_right_menu_img"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:clickable="false"
+            android:scaleType="fitXY"
+            android:src="@drawable/sdk_action_bar_menu_normal" />
+    </LinearLayout>
+
+</merge>

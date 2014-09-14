@@ -21,7 +21,6 @@ import android.app.Application;
 import android.content.Intent;
 import android.os.Bundle;
 
-import com.lee.sdk.R;
 import com.lee.sdk.app.BaseApplication;
 
 /**
@@ -31,50 +30,114 @@ import com.lee.sdk.app.BaseApplication;
  * @since 2011/12/14
  */
 public class BaseActivity extends Activity {
-    /** 
-     * Use default pending transition
-     */
-    protected boolean mUseDefaultPendingTransition = true;
+    /** 下一次Activity启动时，新Activity的进入动画 */
+    private static int sNextEnterAnimWhenStarting;
+    /** 下一次Activity启动时，旧Activity的退出动画 */
+    private static int sNextExitAnimWhenStarting;
+    /** 下一次Activity结束时，新Activity的进入动画 */
+    private static int sNextEnterAnimWhenFinishing;
+    /** 下一次Activity结束时，旧Activity的退出动画 */
+    private static int sNextExitAnimWhenFinishing;
+    /** Invalid animation */
+    private static final int INVALID_ANIM = 0;
+    /** 启动时，新Activity的进入动画 */
+    private int mEnterAnimWhenStarting = INVALID_ANIM;
+    /** 启动时，旧Activity的退出动画 */
+    private int mExitAnimWhenStarting = INVALID_ANIM;
+    /** 结束时，新Activity的进入动画 */
+    private int mEnterAnimWhenFinishing = INVALID_ANIM;
+    /** 结束时，旧Activity的退出动画 */
+    private int mExitAnimWhenFinishing = INVALID_ANIM;
 
     /**
-     * Use default pending transition
+     * 设置下一次Activity的切换动画，enter与exit同时为0时用默认
      * 
-     * @param useDefaultPendingTransition useDefaultPendingTransition
+     * @param enterAnimWhenStarting 下一次Activity启动时，新Activity的进入动画
+     * @param exitAnimWhenStarting 下一次Activity启动时，旧Activity的退出动画
+     * @param enterAnimWhenFinishing 下一次Activity结束时，新Activity的进入动画
+     * @param exitAnimWhenFinishing 下一次Activity结束时，旧Activity的退出动画
+     * @see Activity#overridePendingTransition(int, int)
      */
-    public void setUseDefaultPendingTransition(boolean useDefaultPendingTransition) {
-        mUseDefaultPendingTransition = useDefaultPendingTransition;
+    public static void setNextPendingTransition(int enterAnimWhenStarting, int exitAnimWhenStarting,
+            int enterAnimWhenFinishing, int exitAnimWhenFinishing) {
+        BaseActivity.sNextEnterAnimWhenStarting = enterAnimWhenStarting;
+        BaseActivity.sNextExitAnimWhenStarting = exitAnimWhenStarting;
+        BaseActivity.sNextEnterAnimWhenFinishing = enterAnimWhenFinishing;
+        BaseActivity.sNextExitAnimWhenFinishing = exitAnimWhenFinishing;
     }
 
     /**
-     * Called when activity is created.
+     * 设置本次的切换动画，enter与exit同时为0时用默认
+     * 
+     * @param enterAnimWhenStarting 启动时，新Activity的进入动画
+     * @param exitAnimWhenStarting 启动时，旧Activity的退出动画
+     * @param enterAnimWhenFinishing 结束时，新Activity的进入动画
+     * @param exitAnimWhenFinishing 结束时，旧Activity的退出动画
+     * @see Activity#overridePendingTransition(int, int)
      */
+    protected void setPendingTransition(int enterAnimWhenStarting, int exitAnimWhenStarting,
+            int enterAnimWhenFinishing, int exitAnimWhenFinishing) {
+        mEnterAnimWhenStarting = enterAnimWhenStarting;
+        mExitAnimWhenStarting = exitAnimWhenStarting;
+        mEnterAnimWhenFinishing = enterAnimWhenFinishing;
+        mExitAnimWhenFinishing = exitAnimWhenFinishing;
+    }
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+
+        // 设置本次Activity切换动画
+        if (sNextEnterAnimWhenStarting != INVALID_ANIM || sNextExitAnimWhenStarting != INVALID_ANIM) {
+            mEnterAnimWhenStarting = sNextEnterAnimWhenStarting;
+            mExitAnimWhenStarting = sNextExitAnimWhenStarting;
+        }
+
+        if (sNextEnterAnimWhenFinishing != INVALID_ANIM || sNextExitAnimWhenFinishing != INVALID_ANIM) {
+            mEnterAnimWhenFinishing = sNextEnterAnimWhenFinishing;
+            mExitAnimWhenFinishing = sNextExitAnimWhenFinishing;
+        }
+
+        setNextPendingTransition(INVALID_ANIM, INVALID_ANIM, INVALID_ANIM, INVALID_ANIM);
     }
 
-    /**
-     * Called after {@link #onRestoreInstanceState}, {@link #onRestart}, or {@link #onPause}, for
-     * your activity to start interacting with the user. This is a good place to begin animations,
-     * open exclusive-access devices (such as the camera), etc.
-     * 
-     * <p>
-     * Keep in mind that onResume is not the best indicator that your activity is visible to the
-     * user; a system window such as the keyguard may be in front. Use {@link #onWindowFocusChanged}
-     * to know for certain that your activity is visible to the user (for example, to resume a
-     * game).
-     * 
-     * <p>
-     * <em>Derived classes must call through to the super class's
-     * implementation of this method.  If they do not, an exception will be
-     * thrown.</em>
-     * </p>
-     * 
-     * @see #onRestoreInstanceState
-     * @see #onRestart
-     * @see #onPostResume
-     * @see #onPause
-     */
+    @Override
+    public void onAttachedToWindow() {
+        super.onAttachedToWindow();
+
+        // 添加Activity启动的动画
+        if (mEnterAnimWhenStarting != INVALID_ANIM || mExitAnimWhenStarting != INVALID_ANIM) {
+            overridePendingTransition(mEnterAnimWhenStarting, mExitAnimWhenStarting);
+            mEnterAnimWhenStarting = INVALID_ANIM;
+            mExitAnimWhenStarting = INVALID_ANIM;
+        }
+    }
+
+    @Override
+    protected void onNewIntent(Intent intent) {
+        super.onNewIntent(intent);
+        // 设置本次Activity切换动画
+        if (sNextEnterAnimWhenStarting != INVALID_ANIM || sNextExitAnimWhenStarting != INVALID_ANIM) {
+            mEnterAnimWhenStarting = sNextEnterAnimWhenStarting;
+            mExitAnimWhenStarting = sNextExitAnimWhenStarting;
+        }
+
+        if (sNextEnterAnimWhenFinishing != INVALID_ANIM || sNextExitAnimWhenFinishing != INVALID_ANIM) {
+            mEnterAnimWhenFinishing = sNextEnterAnimWhenFinishing;
+            mExitAnimWhenFinishing = sNextExitAnimWhenFinishing;
+        }
+
+        setNextPendingTransition(INVALID_ANIM, INVALID_ANIM, INVALID_ANIM, INVALID_ANIM);
+
+        // 添加Activity启动的动画
+        if (mEnterAnimWhenStarting != INVALID_ANIM || mExitAnimWhenStarting != INVALID_ANIM) {
+            overridePendingTransition(mEnterAnimWhenStarting, mExitAnimWhenStarting);
+            mEnterAnimWhenStarting = INVALID_ANIM;
+            mExitAnimWhenStarting = INVALID_ANIM;
+        }
+    }
+
+    @Override
     protected void onResume() {
         Application app = this.getApplication();
 
@@ -85,10 +148,6 @@ public class BaseActivity extends Activity {
         super.onResume();
     }
 
-    /**
-     * Called as part of the activity lifecycle when an activity is going into the background, but
-     * has not (yet) been killed. The counterpart to {@link #onResume}.
-     */
     @Override
     protected void onPause() {
         Application app = this.getApplication();
@@ -103,53 +162,14 @@ public class BaseActivity extends Activity {
         super.onPause();
     }
 
-    /**
-     * Launch a new activity. You will not receive any information about when the activity exits.
-     * This implementation overrides the base version, providing information about the activity
-     * performing the launch. Because of this additional information, the
-     * {@link Intent#FLAG_ACTIVITY_NEW_TASK} launch flag is not required; if not specified, the new
-     * activity will be added to the task of the caller.
-     * 
-     * <p>
-     * This method throws {@link android.content.ActivityNotFoundException} if there was no Activity
-     * found to run the given Intent.
-     * 
-     * @param intent The intent to start.
-     * 
-     * @throws android.content.ActivityNotFoundException
-     * 
-     * @see #startActivityForResult
-     */
-    @Override
-    public void startActivity(Intent intent) {
-        super.startActivity(intent);
-
-        if (!mUseDefaultPendingTransition) {
-            this.overridePendingTransition(R.anim.sdk_activity_in, R.anim.sdk_activity_out);
-        }
-    }
-
-    /**
-     * @see #startActivityForResult
-     */
-    @Override
-    public void startActivityForResult(Intent intent, int requestCode) {
-        super.startActivityForResult(intent, requestCode);
-
-        if (!mUseDefaultPendingTransition) {
-            this.overridePendingTransition(R.anim.sdk_activity_in, R.anim.sdk_activity_out);
-        }
-    }
-
-    /**
-     * @see android.app.Activity#finish()
-     */
     @Override
     public void finish() {
         super.finish();
-
-        if (!mUseDefaultPendingTransition) {
-            this.overridePendingTransition(R.anim.sdk_activity_enter_in, R.anim.sdk_activity_exit_out);
+        // 添加Activity退出的动画
+        if (mEnterAnimWhenFinishing != INVALID_ANIM || mExitAnimWhenFinishing != INVALID_ANIM) {
+            overridePendingTransition(mEnterAnimWhenFinishing, mExitAnimWhenFinishing);
+            mEnterAnimWhenFinishing = INVALID_ANIM;
+            mExitAnimWhenFinishing = INVALID_ANIM;
         }
     }
 }

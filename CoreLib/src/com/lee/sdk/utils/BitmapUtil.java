@@ -51,6 +51,7 @@ import android.graphics.drawable.BitmapDrawable;
 import android.graphics.drawable.Drawable;
 import android.net.Uri;
 import android.provider.MediaStore;
+import android.text.TextUtils;
 
 /**
  * This class provides the method to operation for bitmap.
@@ -599,7 +600,7 @@ public class BitmapUtil {
      * @param strPath The path of the bitmap relative to SD Card.
      */
     public static void saveBitmapToSDCard(Bitmap bmp, String strPath) {
-        if (null != bmp && null != strPath && !strPath.equalsIgnoreCase("")) {
+        if (null != bmp && !TextUtils.isEmpty(strPath)) {
             File file = new File(strPath);
             saveBitmapToFile(bmp, file);
         }

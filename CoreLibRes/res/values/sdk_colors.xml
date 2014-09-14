@@ -1,4 +1,9 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <resources>
+
     <color name="picture_loading_text_color">#999999</color>
+    <color name="menu_item_bg_pressed_color">#0c000000</color>
+
+    <drawable name="titlebar_click_background">#4C000000</drawable>
+    <drawable name="null_drawable">#00ffffff</drawable>
 </resources>

@@ -2728,7 +2728,7 @@ public class BdGallery extends BdAbsSpinner implements GestureDetector.OnGesture
 
         if (toLeft) {
             View child = getChildAt(getChildCount() - 1);
-            offset = child.getRight() - this.getRight() + this.getPaddingRight();
+            offset = ((null != child) ? child.getRight() : 0) - this.getRight() + this.getPaddingRight();
             offset = Math.max(offset, 0);
 
             // The item is not the last one.
@@ -2737,7 +2737,7 @@ public class BdGallery extends BdAbsSpinner implements GestureDetector.OnGesture
             }
         } else {
             View child = getChildAt(0);
-            offset = child.getLeft() - this.getPaddingLeft();
+            offset = ((null != child) ? child.getLeft() : 0) - this.getPaddingLeft();
             offset = Math.min(offset, 0);
 
             // The current item is not the first one.

@@ -48,6 +48,8 @@ public final class ImageLoader {
     private Context mAppContext;
     /**使用Disk缓存*/
     private boolean mUseDiskCache = false;
+    /**mFadeInBitmap*/
+    private boolean mFadeInBitmap = false;
     /** 缓存最大百分比 */
     private float mMaxCachePercent = MAX_CACHE_PERCENT;
     /** Listener */
@@ -87,7 +89,7 @@ public final class ImageLoader {
             mImageResizer.setImageCache(imageCache);  
         }
         
-        mImageResizer.setImageFadeIn(false);
+        mImageResizer.setImageFadeIn(mFadeInBitmap);
         mImageResizer.setOnProcessBitmapListener(new OnProcessBitmapListener() {
             @Override
             public Bitmap onProcessBitmap(Object data) {
@@ -260,6 +262,8 @@ public final class ImageLoader {
         private String mCacheDir = null;
         /** 使用Disk缓存 */
         private boolean mUseDiskCache = false;
+        /** mFadeInBitmap */
+        private boolean mFadeInBitmap = false;
         /** 缓存最大百分比 */
         private float mMaxCachePercent = MAX_CACHE_PERCENT;
         
@@ -286,6 +290,15 @@ public final class ImageLoader {
          */
         public Builder setUseDiskCache(boolean useDiskCache) {
             mUseDiskCache = useDiskCache;
+            return this;
+        }
+        
+        /**
+         * @param fadeInBitmap true/false
+         * @return Builder对象
+         */
+        public Builder setFadeInBitmap(boolean fadeInBitmap) {
+            mFadeInBitmap = fadeInBitmap;
             return this;
         }
         
@@ -322,6 +335,7 @@ public final class ImageLoader {
             imageLoader.mCacheDir = mCacheDir;
             imageLoader.mUseDiskCache = mUseDiskCache;
             imageLoader.mMaxCachePercent = mMaxCachePercent;
+            imageLoader.mFadeInBitmap = mFadeInBitmap;
             imageLoader.init();
             return imageLoader;
         }
