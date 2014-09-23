@@ -15,4 +15,12 @@
         <item name="android:windowEnterAnimation">@anim/sdk_menu_open</item>
         <item name="android:windowExitAnimation">@anim/sdk_menu_close</item>
     </style>
+
+    <style name="NoTitleDialog" parent="android:Theme.Dialog">
+        <item name="android:windowNoTitle">true</item>
+        <item name="android:windowContentOverlay">@null</item>
+        <item name="android:windowBackground">@android:color/transparent</item>
+        <item name="android:windowCloseOnTouchOutside">false</item>
+    </style>
+
 </resources>

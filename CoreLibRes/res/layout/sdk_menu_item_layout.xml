@@ -1,11 +1,11 @@
 <?xml version="1.0" encoding="utf-8"?>
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
-    android:layout_height="46dp" >
+    android:layout_height="@dimen/overflow_menu_item_height" >
     <ImageView
         android:id="@+id/menu_item_icon"
-        android:layout_width="30dp"
-        android:layout_height="30dp"
+        android:layout_width="@dimen/overflow_menu_item_icon_width"
+        android:layout_height="@dimen/overflow_menu_item_icon_height"
         android:layout_centerVertical="true"
         android:layout_alignParentLeft="true"
         android:layout_marginLeft="6dp" />
@@ -13,7 +13,6 @@
         android:id="@+id/menu_item_text"
         android:layout_width="wrap_content"
         android:layout_height="match_parent"
-        android:minWidth="122dp"
         android:singleLine="true"
         android:ellipsize="end"
         android:layout_toRightOf="@id/menu_item_icon"

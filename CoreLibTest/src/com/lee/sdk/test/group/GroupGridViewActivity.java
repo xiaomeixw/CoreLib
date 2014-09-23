@@ -27,7 +27,7 @@ public class GroupGridViewActivity extends GABaseActivity
     private TextView mTextView = null;
     
     /**
-     * @see com.nj1s.lib.activity.BaseActivity#onCreate(android.os.Bundle)
+     * @see com.lee.sdk.app.nj1s.lib.activity.BaseActivity#onCreate(android.os.Bundle)
      */
     @Override
     protected void onCreate(Bundle savedInstanceState)

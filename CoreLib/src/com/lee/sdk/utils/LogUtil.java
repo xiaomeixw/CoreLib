@@ -29,20 +29,20 @@ public class LogUtil {
     /**
      * This flag to indicate the log is enabled or disabled.
      */
-    private static boolean s_isLogEnable = true;
+    private static boolean sIsLogEnable = true;
 
     /**
      * Disable the log output.
      */
     public static void disableLog() {
-        s_isLogEnable = false;
+        sIsLogEnable = false;
     }
 
     /**
      * Enable the log output.
      */
     public static void enableLog() {
-        s_isLogEnable = true;
+        sIsLogEnable = true;
     }
 
     /**
@@ -53,7 +53,7 @@ public class LogUtil {
      * @param msg The message you would like logged.
      */
     public static void d(String tag, String msg) {
-        if (s_isLogEnable) {
+        if (sIsLogEnable) {
             // Call the method of Log class directory.
             StackTraceElement stackTrace = java.lang.Thread.currentThread().getStackTrace()[3];
             String fileInfo = stackTrace.getFileName() + "(" + stackTrace.getLineNumber() + ") "
@@ -70,7 +70,7 @@ public class LogUtil {
      * @param msg The message you would like logged.
      */
     public static void i(String tag, String msg) {
-        if (s_isLogEnable) {
+        if (sIsLogEnable) {
             StackTraceElement stackTrace = java.lang.Thread.currentThread().getStackTrace()[3];
             String fileInfo = stackTrace.getFileName() + "(" + stackTrace.getLineNumber() + ") "
                     + stackTrace.getMethodName();
@@ -86,7 +86,7 @@ public class LogUtil {
      * @param msg The message you would like logged.
      */
     public static void e(String tag, String msg) {
-        if (s_isLogEnable) {
+        if (sIsLogEnable) {
             StackTraceElement stackTrace = java.lang.Thread.currentThread().getStackTrace()[3];
             String fileInfo = stackTrace.getFileName() + "(" + stackTrace.getLineNumber() + ") "
                     + stackTrace.getMethodName();
@@ -102,7 +102,7 @@ public class LogUtil {
      * @param msg The message you would like logged.
      */
     public static void w(String tag, String msg) {
-        if (s_isLogEnable) {
+        if (sIsLogEnable) {
             StackTraceElement stackTrace = java.lang.Thread.currentThread().getStackTrace()[3];
             String fileInfo = stackTrace.getFileName() + "(" + stackTrace.getLineNumber() + ") "
                     + stackTrace.getMethodName();
@@ -118,7 +118,7 @@ public class LogUtil {
      * @param msg The message you would like logged.
      */
     public static void v(String tag, String msg) {
-        if (s_isLogEnable) {
+        if (sIsLogEnable) {
             StackTraceElement stackTrace = java.lang.Thread.currentThread().getStackTrace()[3];
             String fileInfo = stackTrace.getFileName() + "(" + stackTrace.getLineNumber() + ") "
                     + stackTrace.getMethodName();

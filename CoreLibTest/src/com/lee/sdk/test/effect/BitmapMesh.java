@@ -32,9 +32,9 @@ import android.view.animation.Animation;
 import android.view.animation.Interpolator;
 import android.view.animation.Transformation;
 
-import com.lee.sdk.mesh.InhaleMesh;
-import com.lee.sdk.mesh.InhaleMesh.InhaleDir;
 import com.lee.sdk.test.R;
+import com.lee.sdk.widget.mesh.InhaleMesh;
+import com.lee.sdk.widget.mesh.InhaleMesh.InhaleDir;
 
 public class BitmapMesh {
 

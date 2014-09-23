@@ -8,11 +8,11 @@ import android.view.View;
 import android.widget.Button;
 import android.widget.LinearLayout;
 
-import com.lee.sdk.mesh.InhaleMesh.InhaleDir;
 import com.lee.sdk.test.GABaseActivity;
 import com.lee.sdk.test.R;
 import com.lee.sdk.test.effect.BitmapMesh;
 import com.lee.sdk.utils.Utils;
+import com.lee.sdk.widget.mesh.InhaleMesh.InhaleDir;
 
 public class InhaleAnimationActivity extends GABaseActivity {
     private static final boolean DEBUG_MODE = true;

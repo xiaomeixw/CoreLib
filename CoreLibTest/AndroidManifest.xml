@@ -16,7 +16,7 @@
     <application
         android:name="com.lee.sdk.test.app.CoreLibApplication"
         android:hardwareAccelerated="true"
-        android:icon="@drawable/ic_launcher"
+        android:icon="@drawable/sdk_downloads_notification_icon"
         android:label="@string/app_name"
         android:theme="@style/AppTheme" >
 
@@ -336,6 +336,15 @@
         <activity
             android:name="com.lee.sdk.test.TestActionBar"
             android:label="@string/title_action_bar" >
+            <intent-filter>
+                <action android:name="android.intent.action.MAIN" />
+                <category android:name="com.lee.sdk.test.intent.category.ANDROIDDEMO" />
+            </intent-filter>
+        </activity>
+        
+        <activity
+            android:name="com.lee.sdk.test.preference.PreferenceSettingActivity"
+            android:label="@string/title_preference" >
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
                 <category android:name="com.lee.sdk.test.intent.category.ANDROIDDEMO" />

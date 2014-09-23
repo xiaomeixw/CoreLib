@@ -1,0 +1,53 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+注意：在声明Preference的时候，如果包含intent标签，则targetPackage和targetClass必须完备，否则解析出来的Intent是空的。
+如果intent指向内部的某个Activity，则最好将targetPackage留空，在解析时会自动补充当前包的PackageName。
+这样做虽然不规范。但能够更好适应OEM改包名的需求。
+ -->
+<PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:preference="http://schemas.android.com/apk/res/com.lee.sdk.test" >
+    
+    <PreferenceCategory
+        preference:key="pref_key_category_settings"
+        preference:title="通用"
+         >
+	    <!-- 插件中心 -->
+        <Preference
+            preference:key="pref_key_plugin_center"
+            preference:title="插件中心" >
+            <intent 
+                android:targetPackage=""
+                android:targetClass="com.baidu.searchbox.plugins.PluginCenterActivity" />
+        </Preference>
+        <!-- 帐号管理 -->
+        <Preference
+            preference:key="pref_key_account_center"
+            preference:title="帐号管理" >
+            <intent 
+                android:targetPackage=""
+                android:targetClass="com.baidu.searchbox.AccountSettingsActivity" />
+        </Preference>
+        <!-- 首页背景 -->
+        <Preference
+            preference:key="pref_key_header"
+            preference:title="首页背景" >
+            <intent 
+                android:targetPackage=""
+                android:targetClass="com.baidu.searchbox.UserDefinedHeaderActivity" />
+        </Preference>
+        
+        <!-- 字体大小 -->
+        <Preference
+            preference:key="pref_key_font_size"
+            preference:title="字体大小" >
+        </Preference>
+    </PreferenceCategory>
+    
+    <PreferenceCategory 
+        preference:title="其他">
+        <Preference 
+            preference:key="pref_key_clear_cache"
+            preference:title="清除缓存" android:enabled="true"/>
+    </PreferenceCategory>
+
+</PreferenceScreen>

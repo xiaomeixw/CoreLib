@@ -7,7 +7,7 @@ package com.lee.sdk.test;
 import android.os.Bundle;
 import android.widget.Toast;
 
-import com.lee.sdk.activity.BrowserActivity;
+import com.lee.sdk.app.WebBrowserActivity;
 import com.lee.sdk.utils.APIUtils;
 import com.lee.sdk.widget.BdActionBar;
 import com.lee.sdk.widget.menu.MenuItem;
@@ -17,7 +17,7 @@ import com.lee.sdk.widget.menu.MenuItem;
  * @author lihong06
  * @since 2014-9-14
  */
-public class TestActionBar extends BrowserActivity {
+public class TestActionBar extends WebBrowserActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -37,7 +37,7 @@ public class TestActionBar extends BrowserActivity {
     
     @Override
     protected String getUrl() {
-        return "http://m.baidu.com";
+        return "http://mo.baidu.com";
     }
 
     @Override

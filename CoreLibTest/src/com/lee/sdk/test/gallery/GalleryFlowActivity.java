@@ -25,7 +25,7 @@ import com.lee.sdk.task.TaskManager;
 import com.lee.sdk.task.TaskOperation;
 import com.lee.sdk.test.GABaseActivity;
 import com.lee.sdk.test.R;
-import com.lee.sdk.utils.BitmapUtil;
+import com.lee.sdk.utils.BitmapUtils;
 import com.lee.sdk.widget.BdGallery;
 import com.lee.sdk.widget.GalleryFlow;
 
@@ -186,7 +186,7 @@ public class GalleryFlowActivity extends GABaseActivity {
         Drawable drawable = getResources().getDrawable(resId);
         if (drawable instanceof BitmapDrawable) {
             Bitmap bitmap = ((BitmapDrawable) drawable).getBitmap();
-            Bitmap reflectedBitmap = BitmapUtil.createReflectedBitmap(bitmap);
+            Bitmap reflectedBitmap = BitmapUtils.createReflectedBitmap(bitmap);
 
             return reflectedBitmap;
         }

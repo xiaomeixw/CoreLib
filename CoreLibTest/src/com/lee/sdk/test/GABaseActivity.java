@@ -4,7 +4,7 @@ import android.app.ActionBar;
 import android.os.Bundle;
 import android.view.MenuItem;
 
-import com.lee.sdk.activity.BaseActivity;
+import com.lee.sdk.app.BaseActivity;
 import com.lee.sdk.utils.APIUtils;
 
 public class GABaseActivity extends BaseActivity {

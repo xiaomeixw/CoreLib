@@ -14,6 +14,7 @@ import android.widget.TextView;
 
 import com.lee.sdk.cache.IAsyncView;
 import com.lee.sdk.cache.ImageLoader;
+import com.lee.sdk.test.R;
 import com.lee.sdk.utils.DensityUtils;
 import com.lee.sdk.widget.staggered.ScaleImageView;
 
@@ -89,7 +90,12 @@ public class ImageAlbumView extends FrameLayout implements IAsyncView {
     @Override
     public void setImageBitmap(Bitmap bitmap) {
         if (null != mImageView) {
-            mImageView.setImageBitmap(bitmap);
+            if (null != bitmap) {
+                mImageView.setImageBitmap(bitmap);
+            } else {
+                mImageView.setImageBitmap(null);
+                mImageView.setBackgroundResource(R.drawable.img_stub);
+            }
         }
     }
 

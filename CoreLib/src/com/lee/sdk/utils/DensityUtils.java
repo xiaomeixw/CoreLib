@@ -21,9 +21,6 @@ import android.util.DisplayMetrics;
 
 /**
  * 屏幕密度相关的API
- * 
- * @author liuxinjian
- * @since 2013-12-19
  */
 public final class DensityUtils {
     

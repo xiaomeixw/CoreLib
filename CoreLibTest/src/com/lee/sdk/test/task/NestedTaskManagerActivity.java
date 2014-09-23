@@ -21,7 +21,7 @@ import com.lee.sdk.task.TaskManager.State;
 import com.lee.sdk.task.TaskOperation;
 import com.lee.sdk.test.R;
 import com.lee.sdk.test.task.TaskManagerActivity.MyTaskManager;
-import com.lee.sdk.utils.BitmapUtil;
+import com.lee.sdk.utils.BitmapUtils;
 import com.lee.sdk.utils.Utils;
 
 public class NestedTaskManagerActivity extends TaskManagerActivity.TaskManagerBaseActivity {
@@ -265,39 +265,39 @@ public class NestedTaskManagerActivity extends TaskManagerActivity.TaskManagerBa
         Bitmap home = null;
         Bitmap guest = null;
 
-        logo = BitmapUtil.getBitmapFromNet(logoUrl);
+        logo = BitmapUtils.getBitmapFromNet(logoUrl);
         if (null == logo) {
             logoUrl = LOGO_URL2;
-            logo = BitmapUtil.getBitmapFromNet(logoUrl);
+            logo = BitmapUtils.getBitmapFromNet(logoUrl);
 
             if (null == logo) {
-                logo = BitmapUtil.drawableToBitmap(getResources().getDrawable(R.drawable.chelsea_logo));
+                logo = BitmapUtils.drawableToBitmap(getResources().getDrawable(R.drawable.chelsea_logo));
                 sleep(500);
             }
         }
 
         // ==============================================
 
-        home = BitmapUtil.getBitmapFromNet(homeUrl);
+        home = BitmapUtils.getBitmapFromNet(homeUrl);
         if (null == home) {
             homeUrl = HOME_URL2;
-            home = BitmapUtil.getBitmapFromNet(homeUrl);
+            home = BitmapUtils.getBitmapFromNet(homeUrl);
 
             if (null == home) {
-                home = BitmapUtil.drawableToBitmap(getResources().getDrawable(R.drawable.chelsea_1));
+                home = BitmapUtils.drawableToBitmap(getResources().getDrawable(R.drawable.chelsea_1));
                 sleep(500);
             }
         }
 
         // ==============================================
 
-        guest = BitmapUtil.getBitmapFromNet(guestUrl);
+        guest = BitmapUtils.getBitmapFromNet(guestUrl);
         if (null == guest) {
             guestUrl = GUEST_URL2;
-            guest = BitmapUtil.getBitmapFromNet(guestUrl);
+            guest = BitmapUtils.getBitmapFromNet(guestUrl);
 
             if (null == guest) {
-                guest = BitmapUtil.drawableToBitmap(getResources().getDrawable(R.drawable.chelsea_2));
+                guest = BitmapUtils.drawableToBitmap(getResources().getDrawable(R.drawable.chelsea_2));
                 sleep(500);
             }
         }

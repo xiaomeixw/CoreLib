@@ -30,9 +30,9 @@ import android.view.animation.Animation;
 import android.view.animation.Interpolator;
 import android.view.animation.Transformation;
 
-import com.lee.sdk.mesh.CycleMesh;
-import com.lee.sdk.mesh.Mesh;
 import com.lee.sdk.test.R;
+import com.lee.sdk.widget.mesh.CycleMesh;
+import com.lee.sdk.widget.mesh.Mesh;
 
 public class BitmapMesh2 {
     
