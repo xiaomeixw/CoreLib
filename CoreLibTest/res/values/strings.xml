@@ -74,8 +74,11 @@
     
     <!-- ViewPager -->
     <string name="title_view_pager">View Pager</string>
+    <string name="title_view_pager_normal">Normal ViewPager</string>
+    <string name="title_view_pager_circular">Circular ViewPager</string>
     <string name="title_image_viewer">Image Viewer</string>
     <string name="title_staggered_images">Staggered Image</string>
     <string name="title_action_bar">ActionBar</string>
     <string name="title_preference">Preference</string>
+    <string name="title_webview">WebView</string>
 </resources>

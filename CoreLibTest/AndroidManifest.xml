@@ -311,11 +311,29 @@
         
         <!-- ViewPager -->
         <activity
-            android:name="com.lee.sdk.test.ViewPagerActivity"
+            android:name="com.lee.sdk.test.viewpager.ViewPagerActivity"
             android:label="@string/title_view_pager" >
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
                 <category android:name="com.lee.sdk.test.intent.category.ANDROIDDEMO" />
+            </intent-filter>
+        </activity>
+        
+        <activity
+            android:name="com.lee.sdk.test.viewpager.NormalViewPagerActivity"
+            android:label="@string/title_view_pager_normal" >
+            <intent-filter>
+                <action android:name="android.intent.action.MAIN" />
+                <category android:name="com.lee.sdk.test.intent.category.VIEWPAGER" />
+            </intent-filter>
+        </activity>
+        
+        <activity
+            android:name="com.lee.sdk.test.viewpager.CircularViewPagerActivity"
+            android:label="@string/title_view_pager_circular" >
+            <intent-filter>
+                <action android:name="android.intent.action.MAIN" />
+                <category android:name="com.lee.sdk.test.intent.category.VIEWPAGER" />
             </intent-filter>
         </activity>
         
@@ -334,7 +352,7 @@
         </activity>
         
         <activity
-            android:name="com.lee.sdk.test.TestActionBar"
+            android:name="com.lee.sdk.test.ActionBarActivity"
             android:label="@string/title_action_bar" >
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
@@ -350,6 +368,17 @@
                 <category android:name="com.lee.sdk.test.intent.category.ANDROIDDEMO" />
             </intent-filter>
         </activity>
+        
+        <activity
+            android:name="com.lee.sdk.test.WebViewActivity"
+            android:label="@string/title_webview" >
+            <intent-filter>
+                <action android:name="android.intent.action.MAIN" />
+                <category android:name="com.lee.sdk.test.intent.category.ANDROIDDEMO" />
+            </intent-filter>
+        </activity>
+        
+        
     </application>
 
 </manifest>

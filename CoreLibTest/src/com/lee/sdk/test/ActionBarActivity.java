@@ -17,7 +17,7 @@ import com.lee.sdk.widget.menu.MenuItem;
  * @author lihong06
  * @since 2014-9-14
  */
-public class TestActionBar extends WebBrowserActivity {
+public class ActionBarActivity extends WebBrowserActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);

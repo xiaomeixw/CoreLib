@@ -84,7 +84,7 @@ public abstract class PagerAdapterImpl extends PagerAdapter {
         View view = mViewPool.get();
         if (null == view) {
             if (DEBUG) {
-                Log.e(TAG, "instantiateItem    create view!!!");
+                Log.e(TAG, "instantiateItem    create view!!!, position = " + position);
             }
             view = onInstantiateItem(container, position);
         }

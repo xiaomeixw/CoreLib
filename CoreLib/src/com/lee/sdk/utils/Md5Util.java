@@ -24,7 +24,7 @@ import java.security.NoSuchAlgorithmException;
  * 
  * @author Cyril Mottier
  */
-public class Md5Util {
+public class MD5Util {
 
     private static MessageDigest sMd5MessageDigest;
     private static StringBuilder sStringBuilder;
@@ -39,7 +39,7 @@ public class Md5Util {
         sStringBuilder = new StringBuilder();
     }
 
-    private Md5Util() {
+    private MD5Util() {
     }
 
     /**
@@ -65,5 +65,41 @@ public class Md5Util {
         }
 
         return sStringBuilder.toString();
+    }
+
+    /**
+     * 把二进制byte数组生成 md5 32位 十六进制字符串，单个字节小于0xf，高位补0。
+     * 
+     * @param bytes 输入
+     * @param upperCase true：大写， false 小写字符串
+     * @return 把二进制byte数组生成 md5 32位 十六进制字符串，单个字节小于0xf，高位补0。
+     */
+    public static String toMd5(byte[] bytes, boolean upperCase) {
+        sMd5MessageDigest.reset();
+        sMd5MessageDigest.update(bytes);
+        return toHexString(sMd5MessageDigest.digest(), "", upperCase);
+    }
+
+    /**
+     * 把二进制byte数组生成十六进制字符串，单个字节小于0xf，高位补0。
+     * 
+     * @param bytes 输入
+     * @param separator 分割线
+     * @param upperCase true：大写， false 小写字符串
+     * @return 把二进制byte数组生成十六进制字符串，单个字节小于0xf，高位补0。
+     */
+    public static String toHexString(byte[] bytes, String separator, boolean upperCase) {
+        StringBuilder hexString = new StringBuilder();
+        for (byte b : bytes) {
+            String str = Integer.toHexString(0xFF & b); // SUPPRESS CHECKSTYLE
+            if (upperCase) {
+                str = str.toUpperCase();
+            }
+            if (str.length() == 1) {
+                hexString.append("0");
+            }
+            hexString.append(str).append(separator);
+        }
+        return hexString.toString();
     }
 }

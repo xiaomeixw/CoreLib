@@ -16,12 +16,18 @@
 
 package com.lee.sdk.widget.viewpager;
 
+import com.lee.sdk.utils.DensityUtils;
+
 import android.content.Context;
 import android.content.res.Resources;
 import android.graphics.Canvas;
+import android.graphics.Color;
 import android.graphics.Rect;
 import android.graphics.drawable.BitmapDrawable;
+import android.graphics.drawable.ColorDrawable;
 import android.graphics.drawable.Drawable;
+import android.support.v4.view.ViewPager;
+import android.support.v4.view.ViewPager.OnPageChangeListener;
 import android.util.AttributeSet;
 import android.view.View;
 
@@ -31,7 +37,7 @@ import android.view.View;
  * @author lihong06
  * @since 2014-3-20
  */
-public class PointPageIndicator extends View {
+public class PointPageIndicator extends View implements PageIndicator {
     /** Normal drawable */
     private Drawable mNormalDrawable = null;
     /** Select drawable */
@@ -46,6 +52,10 @@ public class PointPageIndicator extends View {
     private int mPosition = 0;
     /** Point count */
     private int mPointCount = 0;
+    /** View pager */
+    private ViewPager mViewPager;
+    /** External listener */
+    private OnPageChangeListener mExternalPageChangeListener;
     
     /**
      * Constructor method
@@ -89,7 +99,9 @@ public class PointPageIndicator extends View {
      * @param context context
      */
     private void init(Context context) {
-        
+        setPointSize(DensityUtils.dip2px(context, 16));
+        setPointMargin(DensityUtils.dip2px(context, 10));
+        setPointDrawable(new ColorDrawable(Color.WHITE), new ColorDrawable(Color.RED));
     }
     
     /**
@@ -176,6 +188,14 @@ public class PointPageIndicator extends View {
     protected void onDraw(Canvas canvas) {
         super.onDraw(canvas);
         
+        if (null != mViewPager) {
+            if (mViewPager instanceof CircularViewPager) {
+                mPointCount = ((CircularViewPager) mViewPager).getCount();
+            } else {
+                mPointCount = mViewPager.getAdapter().getCount();
+            }
+        }
+        
         if (mPointCount <= 0) {
             return;
         }
@@ -212,5 +232,55 @@ public class PointPageIndicator extends View {
                 left += (normalRc.width() + margin);
             }
         }
+    }
+
+    @Override
+    public void onPageScrollStateChanged(int arg0) {
+        if (null != mExternalPageChangeListener) {
+            mExternalPageChangeListener.onPageScrollStateChanged(arg0);
+        }
+    }
+
+    @Override
+    public void onPageScrolled(int arg0, float arg1, int arg2) {
+        if (null != mExternalPageChangeListener) {
+            mExternalPageChangeListener.onPageScrolled(arg0, arg1, arg2);
+        }
+    }
+
+    @Override
+    public void onPageSelected(int arg0) {
+        setCurrentItem(arg0);
+        
+        if (null != mExternalPageChangeListener) {
+            mExternalPageChangeListener.onPageSelected(arg0);
+        }
+    }
+
+    @Override
+    public void setViewPager(ViewPager view) {
+        setViewPager(view, 0);
+    }
+
+    @Override
+    public void setViewPager(ViewPager view, int initialPosition) {
+        mViewPager = view;
+        mViewPager.setOnPageChangeListener(this);
+        setCurrentItem(initialPosition);
+    }
+
+    @Override
+    public void setCurrentItem(int item) {
+        setCurrentPosition(item);
+    }
+
+    @Override
+    public void setOnPageChangeListener(OnPageChangeListener listener) {
+        mExternalPageChangeListener = listener;
+    }
+
+    @Override
+    public void notifyDataSetChanged() {
+        
     }
 }

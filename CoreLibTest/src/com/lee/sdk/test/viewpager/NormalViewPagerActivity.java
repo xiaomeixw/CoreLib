@@ -1,13 +1,16 @@
-package com.lee.sdk.test;
+package com.lee.sdk.test.viewpager;
 
 import java.util.ArrayList;
 
+import android.graphics.Color;
 import android.os.Bundle;
 import android.view.Gravity;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.TextView;
 
+import com.lee.sdk.test.BaseFragmentActivity;
+import com.lee.sdk.test.R;
 import com.lee.sdk.widget.viewpager.BdPagerTab;
 import com.lee.sdk.widget.viewpager.BdPagerTabHost;
 import com.lee.sdk.widget.viewpager.PagerAdapterImpl;
@@ -17,7 +20,7 @@ import com.lee.sdk.widget.viewpager.PagerAdapterImpl;
  * @author lihong06
  * @since 2014-2-21
  */
-public class ViewPagerActivity extends BaseFragmentActivity {
+public class NormalViewPagerActivity extends BaseFragmentActivity {
     ArrayList<String> mDatas = new ArrayList<String>();
 
     @Override
@@ -56,21 +59,6 @@ public class ViewPagerActivity extends BaseFragmentActivity {
         // 设置tab的indicator，通常需要设置，默认是红色的。
         tabHostView.layoutTabs(); // 布局tab
 
-        // FragmentPagerAdapter adapter = new FragmentPagerAdapter(getSupportFragmentManager()) {
-        // public int getCount() {
-        // return tabHostView.getTabCount();
-        // }
-        //
-        // public Fragment getItem(int position) {
-        // // 返回相应的fragment
-        // ContentFragement fragment = new ContentFragement();
-        // String text = mDatas.get(position);
-        // fragment.setText(text);
-        //
-        // return fragment;
-        // }
-        // };
-
         PagerAdapterImpl adapter = new PagerAdapterImpl() {
             @Override
             public int getCount() {
@@ -79,8 +67,9 @@ public class ViewPagerActivity extends BaseFragmentActivity {
 
             @Override
             protected View onInstantiateItem(ViewGroup container, int position) {
-                TextView textView = new TextView(ViewPagerActivity.this);
+                TextView textView = new TextView(NormalViewPagerActivity.this);
                 textView.setTextSize(30);
+                textView.setTextColor(Color.RED);
                 textView.setGravity(Gravity.CENTER);
                 return textView;
             }
@@ -94,43 +83,8 @@ public class ViewPagerActivity extends BaseFragmentActivity {
                 }
             }
         };
-
+        
         // 设置adapter，默认选中第1个tab。
         tabHostView.setPagerAdapter(adapter, 0);
     }
-
-    // private static class ContentFragement extends Fragment {
-    // private TextView mTextView = null;
-    // private String mText = null;
-    //
-    // @Override
-    // public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle
-    // savedInstanceState) {
-    // if (null == mTextView) {
-    // mTextView = new TextView(getActivity());
-    // mTextView.setTextSize(30);
-    // mTextView.setGravity(Gravity.CENTER);
-    // }
-    //
-    // View view = getView();
-    // if (view == null) {
-    // view = mTextView;
-    // ViewGroup parent = (ViewGroup) view.getParent();
-    // if (parent != null) {
-    // parent.removeView(view);
-    // }
-    // }
-    //
-    // setText(mText);
-    //
-    // return mTextView;
-    // }
-    //
-    // public void setText(String text) {
-    // mText = text;
-    // if (null != mTextView) {
-    // mTextView.setText(text);
-    // }
-    // }
-    // }
 }

@@ -118,11 +118,12 @@ public class DrawablePageIndicator extends View implements PageIndicator {
         if (mViewPager == null) {
             return;
         }
+        
         final int count = mViewPager.getAdapter().getCount();
         if (count == 0) {
             return;
         }
-
+        
         if (mCurrentPage >= count) {
             setCurrentItem(count - 1);
             return;
@@ -259,7 +260,7 @@ public class DrawablePageIndicator extends View implements PageIndicator {
         if (mViewPager == null) {
             throw new IllegalStateException("ViewPager has not been bound.");
         }
-        mViewPager.setCurrentItem(item);
+        mViewPager.setCurrentItem(item, false);
         mCurrentPage = item;
         invalidate();
     }
