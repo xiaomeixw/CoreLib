@@ -133,6 +133,7 @@ public class ImageCache {
     public void initDiskCache() {
         // Set up disk cache
         synchronized (mDiskCacheLock) {
+            long start = System.currentTimeMillis();
             if (mDiskLruCache == null || mDiskLruCache.isClosed()) {
                 File diskCacheDir = mCacheParams.diskCacheDir;
                 if (mCacheParams.diskCacheEnabled && diskCacheDir != null) {
@@ -148,11 +149,19 @@ public class ImageCache {
                             }
                         } catch (final IOException e) {
                             mCacheParams.diskCacheDir = null;
-                            Log.e(TAG, "initDiskCache - " + e);
+                            if (BuildConfig.DEBUG) {
+                                Log.e(TAG, "initDiskCache - " + e);
+                            }
                         }
                     }
                 }
             }
+            
+            long end = System.currentTimeMillis();
+            if (BuildConfig.DEBUG) {
+                Log.e(TAG, "initDiskCache -    time = " + (end - start) + "  ms");
+            }
+            
             mDiskCacheStarting = false;
             mDiskCacheLock.notifyAll();
         }
@@ -164,6 +173,15 @@ public class ImageCache {
      * @param bitmap The bitmap to store
      */
     public void addBitmapToCache(String data, Bitmap bitmap) {
+        addBitmapToCache(data, bitmap, true);
+    }
+    
+    /**
+     * Adds a bitmap to both memory and disk cache.
+     * @param data Unique identifier for the bitmap to store
+     * @param bitmap The bitmap to store
+     */
+    public void addBitmapToCache(String data, Bitmap bitmap, boolean addToDiskCache) {
         if (data == null || bitmap == null) {
             return;
         }
@@ -177,7 +195,17 @@ public class ImageCache {
             }
         }
 
+        // Not add bitmap to cache.
+        if (!addToDiskCache) {
+            return;
+        }
+        
         synchronized (mDiskCacheLock) {
+            while (mDiskCacheStarting) {
+                try {
+                    mDiskCacheLock.wait();
+                } catch (InterruptedException e) {}
+            }
             // Add to disk cache
             if (mDiskLruCache != null) {
                 final String key = hashKeyForDisk(data);
@@ -204,6 +232,71 @@ public class ImageCache {
                     try {
                         if (out != null) {
                             out.close();
+                        }
+                    } catch (IOException e) {}
+                }
+            }
+        }
+    }
+    
+    /**
+     * Adds a bitmap to both memory and disk cache.
+     * @param data Unique identifier for the bitmap to store
+     * @param bitmap The bitmap to store
+     */
+    public void addStreamToCache(String data, InputStream is) {
+        if (data == null || is == null) {
+            return;
+        }
+        
+        // DO NOT Add to memory cache
+        
+        synchronized (mDiskCacheLock) {
+            while (mDiskCacheStarting) {
+                try {
+                    mDiskCacheLock.wait();
+                } catch (InterruptedException e) {}
+            }
+            
+            // Add to disk cache
+            if (mDiskLruCache != null) {
+                final String key = hashKeyForDisk(data);
+                OutputStream out = null;
+                try {
+                    DiskLruCache.Snapshot snapshot = mDiskLruCache.get(key);
+                    if (snapshot == null) {
+                        final DiskLruCache.Editor editor = mDiskLruCache.edit(key);
+                        if (editor != null) {
+                            out = editor.newOutputStream(DISK_CACHE_INDEX);
+                            
+                            // Copy the input stream to output stream
+                            byte[] buf = new byte[1024 * 3];
+                            int len = 0;
+                            while ((len = is.read(buf)) > 0) {
+                                out.write(buf, 0, len);
+                            }
+                            out.flush();
+                            editor.commit();
+                            out.close();
+                        }
+                    } else {
+                        snapshot.getInputStream(DISK_CACHE_INDEX).close();
+                    }
+                } catch (final IOException e) {
+                    if (BuildConfig.DEBUG) {
+                        Log.e(TAG, "addBitmapToCache - " + e);
+                    }
+                } catch (Exception e) {
+                    if (BuildConfig.DEBUG) {
+                        Log.e(TAG, "addBitmapToCache - " + e);
+                    }
+                } finally {
+                    try {
+                        if (out != null) {
+                            out.close();
+                        }
+                        if (is != null) {
+                            is.close();
                         }
                     } catch (IOException e) {}
                 }
@@ -244,15 +337,59 @@ public class ImageCache {
     }
 
     /**
+     * 检查diskcache中有没有data对应的图片
+     * 
+     * @param data Unique identifier for which item to get
+     * @return true if found in disk cache, false otherwise
+     */
+    public boolean hasBitmapInDiskCache(String data) {
+        final String key = hashKeyForDisk(data);
+        synchronized (mDiskCacheLock) {
+            while (mDiskCacheStarting) {
+                try {
+                    mDiskCacheLock.wait();
+                } catch (InterruptedException e) {}
+            }
+            
+            if (mDiskLruCache != null) {
+                DiskLruCache.Snapshot snapshot = null;
+                try {
+                    snapshot = mDiskLruCache.get(key);
+                    if (snapshot != null) {
+                        if (BuildConfig.DEBUG) {
+                            Log.d(TAG, "Disk cache hit");
+                        }
+                        return true;
+                    }
+                } catch (IOException e) {
+                    e.printStackTrace();
+                } finally {
+                    if (snapshot != null) {
+                        snapshot.close();
+                    }
+                }
+            }
+            return false;
+        }
+    }
+    
+    /**
      * Get from disk cache.
      *
      * @param data Unique identifier for which item to get
      * @return The bitmap if found in cache, null otherwise
      */
     public Bitmap getBitmapFromDiskCache(String data) {
+        // Do not check the object is null, in one case, if the image worker is initializing disk cache, at this time,
+        // a bitmap request from disk cache is coming, mDiskLruCache is still null, so we will request bitmap from
+        // network or other source, typically it will call listener to tell caller to load bitmap, however, the data 
+        // may exit a cache file in local, it is not reasonable to get bitmap from network. The correct step is 
+        // waiting the complete of initializing work.
+        /*
         if (null == mDiskLruCache) {
             return null;
         }
+        */
         
         final String key = hashKeyForDisk(data);
         synchronized (mDiskCacheLock) {
@@ -261,6 +398,7 @@ public class ImageCache {
                     mDiskCacheLock.wait();
                 } catch (InterruptedException e) {}
             }
+            
             if (mDiskLruCache != null) {
                 InputStream inputStream = null;
                 try {
@@ -292,6 +430,71 @@ public class ImageCache {
                 }
             }
             return null;
+        }
+    }
+    
+    /**
+     * Get the input stream from disk cache.
+     *
+     * @param data Unique identifier for which item to get
+     * @return The input stream if found in cache, null otherwise, you should be responsible for closing the stream
+     */
+    public InputStream getStreamFromDiskCache(String data) {
+        // Do not check the object is null, in one case, if the image worker is initializing disk cache, at this time,
+        // a bitmap request from disk cache is coming, mDiskLruCache is still null, so we will request bitmap from
+        // network or other source, typically it will call listener to tell caller to load bitmap, however, the data 
+        // may exit a cache file in local, it is not reasonable to get bitmap from network. The correct step is 
+        // waiting the complete of initializing work.
+        /*
+        if (null == mDiskLruCache) {
+            return null;
+        }
+        */
+        
+        final String key = hashKeyForDisk(data);
+        synchronized (mDiskCacheLock) {
+            while (mDiskCacheStarting) {
+                try {
+                    mDiskCacheLock.wait();
+                } catch (InterruptedException e) {}
+            }
+            
+            if (mDiskLruCache != null) {
+                InputStream inputStream = null;
+                try {
+                    final DiskLruCache.Snapshot snapshot = mDiskLruCache.get(key);
+                    if (snapshot != null) {
+                        if (BuildConfig.DEBUG) {
+                            Log.d(TAG, "Disk cache hit");
+                        }
+                        inputStream = snapshot.getInputStream(DISK_CACHE_INDEX);
+                        return inputStream;
+                    }
+                } catch (final IOException e) {
+                    if (BuildConfig.DEBUG) {
+                        Log.e(TAG, "getBitmapFromDiskCache - " + e);
+                    }
+                } finally {
+                    
+                }
+            }
+            return null;
+        }
+    }
+    
+    /**
+     * Clear the disk cache
+     * 
+     * @param data data
+     */
+    public void clearDiskCache(String data) {
+        if (null != mDiskLruCache && !mDiskLruCache.isClosed()) {
+            try {
+                final String key = hashKeyForDisk(data);
+                mDiskLruCache.remove(key);
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
         }
     }
     
@@ -430,6 +633,10 @@ public class ImageCache {
                         + "between 0.05 and 0.8 (inclusive)");
             }
             memCacheSize = Math.round(percent * getMemoryClass(context) * 1024 * 1024);
+        }
+        
+        public void setMaxDiskCacheSize(int diskCacheSize) {
+            this.diskCacheSize = diskCacheSize;
         }
         
         public void setMemCacheSizeCount(Context context, int count) {
@@ -617,6 +824,16 @@ public class ImageCache {
         }
         
         return writealbe;
+    }
+    
+    /**
+     * 得到当前缓存的目录
+     * 
+     * @return 缓存目录
+     */
+    public File getDiskCacheDir() {
+        File diskCacheDir = mCacheParams.diskCacheDir;
+        return diskCacheDir;
     }
 
     /**

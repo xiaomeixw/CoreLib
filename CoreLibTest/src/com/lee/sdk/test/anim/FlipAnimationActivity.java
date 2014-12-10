@@ -1,5 +1,6 @@
 package com.lee.sdk.test.anim;
 
+import java.io.InputStream;
 import java.util.ArrayList;
 
 import android.app.ProgressDialog;
@@ -29,7 +30,7 @@ import android.widget.Toast;
 import com.lee.sdk.anim.Flip3dAnimation.OnFlip3dAnimationListener;
 import com.lee.sdk.cache.IAsyncView;
 import com.lee.sdk.cache.ImageLoader;
-import com.lee.sdk.cache.ImageResizer.OnProcessBitmapListener;
+import com.lee.sdk.cache.ImageResizer.OnProcessDataListener;
 import com.lee.sdk.task.Task;
 import com.lee.sdk.task.Task.RunningStatus;
 import com.lee.sdk.task.TaskManager;
@@ -74,13 +75,23 @@ public class FlipAnimationActivity extends GABaseActivity {
 
         mImageLoader = ImageLoader.Builder.newInstance(this)
                 .setMaxCachePercent(0.3f).build();
-        mImageLoader.setOnProcessBitmapListener(new OnProcessBitmapListener() {
+//        mImageLoader.setOnProcessBitmapListener(new OnProcessBitmapListener() {
+//            @Override
+//            public Bitmap onProcessBitmap(Object data) {
+//                if (data instanceof MediaInfo) {
+//                    return mSearchUtil.getImageThumbnail2((MediaInfo) data);
+//                }
+//                
+//                return null;
+//            }
+//        });
+        
+        mImageLoader.setOnProcessDataListener(new OnProcessDataListener() {
             @Override
-            public Bitmap onProcessBitmap(Object data) {
+            public Object onDecodeStream(Object data, InputStream is) {
                 if (data instanceof MediaInfo) {
                     return mSearchUtil.getImageThumbnail2((MediaInfo) data);
                 }
-                
                 return null;
             }
         });
@@ -391,6 +402,11 @@ public class FlipAnimationActivity extends GABaseActivity {
         @Override
         public Drawable getAsyncDrawable() {
             return mDrawable;
+        }
+        
+        @Override
+        public boolean isGifSupported() {
+            return false;
         }
     }
 }

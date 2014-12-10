@@ -206,8 +206,6 @@ import java.util.concurrent.TimeUnit;
             reader.close();
         }
     }
-    
-    static StringBuilder result = new StringBuilder(80);
 
     /**
      * Returns the ASCII characters up to but not including the next "\r\n", or
@@ -218,8 +216,8 @@ import java.util.concurrent.TimeUnit;
      */
     public static String readAsciiLine(InputStream in) throws IOException {
         // TODO: support UTF-8 here instead
-
-        result.delete(0, result.length());
+        
+        StringBuilder result = new StringBuilder(80);
         
         while (true) {
             int c = in.read();
@@ -714,8 +712,14 @@ import java.util.concurrent.TimeUnit;
      * the cache.
      */
     public void delete() throws IOException {
-        close();
-        deleteContents(directory);
+        try {
+            close();
+            // FIX MTJ exception:
+            // Caused by: java.lang.IllegalArgumentException: not a directory: /storage/emulated/0/Android/data/com.baidu.searchbox/cache/img_cache
+            deleteContents(directory);
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
     }
 
     private void validateKey(String key) {

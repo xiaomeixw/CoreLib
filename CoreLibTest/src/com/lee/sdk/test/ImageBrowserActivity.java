@@ -20,11 +20,9 @@ import java.util.List;
 
 import android.content.Context;
 import android.content.Intent;
-import android.graphics.Bitmap;
 import android.os.Bundle;
 
 import com.lee.sdk.cache.ImageLoader;
-import com.lee.sdk.cache.ImageResizer.OnProcessBitmapListener;
 import com.lee.sdk.widget.image.ImageViewTouchViewPager;
 
 /**
@@ -34,9 +32,7 @@ import com.lee.sdk.widget.image.ImageViewTouchViewPager;
  * @since 2014-3-6
  */
 public class ImageBrowserActivity extends GABaseActivity {
-    /** Temporary datas */
     private static List<String> sTempDatas = null;
-    /** Temporary position */
     private static int sTempPosition = 0;
     
     /** View pager */
@@ -62,18 +58,19 @@ public class ImageBrowserActivity extends GABaseActivity {
         super.onCreate(savedInstanceState);
 
         mImageLoader = ImageLoader.Builder.newInstance(this)
-                .setUseDiskCache(false)
+                .setUseDiskCache(true)
                 .setMaxCachePercent(0.2f)
+                .setMaxDiskCacheSize(1024 * 1024 * 100) // 100MB
                 .build();
-        mImageLoader.setOnProcessBitmapListener(new OnProcessBitmapListener() {
-            @Override
-            public Bitmap onProcessBitmap(Object data) {
-                if (data instanceof String) {
-                    return ImageLoader.loadImageFromFile((String) data);
-                }
-                return null;
-            }
-        });
+//        mImageLoader.setOnProcessBitmapListener(new OnProcessBitmapListener() {
+//            @Override
+//            public Bitmap onProcessBitmap(Object data) {
+//                if (data instanceof String) {
+//                    return ImageLoader.loadImageFromFile((String) data);
+//                }
+//                return null;
+//            }
+//        });
         
         mViewPager = new ImageViewTouchViewPager(this);
         mViewPager.setDatas(sTempDatas);

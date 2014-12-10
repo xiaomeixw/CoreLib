@@ -25,17 +25,26 @@ import com.lee.sdk.test.utils.MediaInfo;
 public class ImageViewAdapter extends BaseAdapter {
     public static final int COLUMN_NUM = 3;
     public static final int SPACE = 10;
-    
     protected ArrayList<MediaInfo> mDatas = new ArrayList<MediaInfo>();
     private int mWidth = 180;
     private int mHeight = 180;
     private boolean mCalced = false;
     private Context mContext;
     private ImageLoader mImageLoader;
+    private boolean mUsePath = false;
+    private boolean mIsSupportGif = false;
     
     public ImageViewAdapter(Context context, ImageLoader imageLoader) {
         mContext = context;
         mImageLoader = imageLoader;
+    }
+    
+    public void setUsePath(boolean usePath) {
+        mUsePath = usePath;
+    }
+    
+    public void setIsSupportGif(boolean isSupportGif) {
+        mIsSupportGif = isSupportGif;
     }
     
     public void setData(ArrayList<MediaInfo> datas) {
@@ -75,7 +84,12 @@ public class ImageViewAdapter extends BaseAdapter {
 
         imageView = (GridViewImageView) convertView;
         if (null != mImageLoader) {
-            mImageLoader.loadImage(mDatas.get(position), imageView);
+            if (mUsePath) {
+                String path = mDatas.get(position).getFullPath();
+                mImageLoader.loadImage(path, imageView);
+            } else {
+                mImageLoader.loadImage(mDatas.get(position), imageView);
+            }
             
             // 如果缓存中的图片数量大于15个，就清除内存中的图片缓存，因为封面可能太大，根本连15张都无法容纳
             if (mImageLoader.getBitmapSizeInMemCache() > 15) {
@@ -87,7 +101,9 @@ public class ImageViewAdapter extends BaseAdapter {
     }
     
     protected View createView(Context context, ViewGroup parent) {
-        return new GridViewImageView(context);
+        GridViewImageView view = new GridViewImageView(context);
+        view.setIsSupportGif(mIsSupportGif);
+        return view;
     }
     
     private void calc(int parentWidth) {
@@ -102,6 +118,8 @@ public class ImageViewAdapter extends BaseAdapter {
     }
     
     public static class GridViewImageView extends ImageView implements IAsyncView {
+        private boolean mIsSupportGif = true;
+        
         public GridViewImageView(Context context) {
             super(context);
         }
@@ -124,6 +142,15 @@ public class ImageViewAdapter extends BaseAdapter {
         @Override
         public void setAsyncDrawable(Drawable drawable) {
             mDrawable = drawable;
+        }
+        
+        @Override
+        public boolean isGifSupported() {
+            return mIsSupportGif;
+        }
+        
+        public void setIsSupportGif(boolean isSupportGif) {
+            mIsSupportGif = isSupportGif;
         }
     }
 }

@@ -1,17 +1,5 @@
 /*
- * Copyright (C) 2013 Lee Hong (http://blog.csdn.net/leehong2005)
- *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
- *
- *      http://www.apache.org/licenses/LICENSE-2.0
- *
- * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the License for the specific language governing permissions and
- * limitations under the License.
+ * Copyright (C) 2011 Baidu Inc. All rights reserved.
  */
 
 package com.lee.sdk.cache;
@@ -29,15 +17,21 @@ import android.graphics.drawable.Drawable;
  * @author LiHong
  * @since 2013-11-24
  */
-public abstract class AsyncView implements IAsyncView {
+public class AsyncView implements IAsyncView {
     /** 异步加载的drawable，里面包含了AsyncTask对象，不能删除 */
     private Drawable mAsyncDrawable = null;
+    /** 是否支持GIF */
+    private boolean mIsSupportGif = false;
     
     @Override
-    public abstract void setImageBitmap(Bitmap bitmap);
+    public void setImageBitmap(Bitmap bitmap) {
+        // do nothing
+    }
 
     @Override
-    public abstract void setImageDrawable(Drawable drawable);
+    public void setImageDrawable(Drawable drawable) {
+        // do nothing
+    }
 
     @Override
     public void setAsyncDrawable(Drawable drawable) {
@@ -47,5 +41,19 @@ public abstract class AsyncView implements IAsyncView {
     @Override
     public Drawable getAsyncDrawable() {
         return mAsyncDrawable;
+    }
+    
+    /**
+     * 设置是否支持GIF
+     * 
+     * @param supportGif true/false
+     */
+    public void setSupportGif(boolean supportGif) {
+        mIsSupportGif = supportGif;
+    }
+
+    @Override
+    public boolean isGifSupported() {
+        return mIsSupportGif;
     }
 }

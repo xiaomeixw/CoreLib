@@ -19,6 +19,7 @@ package com.lee.sdk.cache;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
+import java.util.ArrayList;
 
 import android.content.Context;
 import android.graphics.Bitmap;
@@ -26,7 +27,7 @@ import android.graphics.BitmapFactory;
 import android.text.TextUtils;
 
 import com.lee.sdk.cache.ImageCache.ImageCacheParams;
-import com.lee.sdk.cache.ImageResizer.OnProcessBitmapListener;
+import com.lee.sdk.cache.ImageResizer.OnProcessDataListener;
 import com.lee.sdk.cache.ImageWorker.OnLoadImageListener;
 
 /**
@@ -41,7 +42,7 @@ public final class ImageLoader {
     /**缓存的大小的百分比*/
     private static final float MAX_CACHE_PERCENT = 0.12f;
     /**加载图片的具体类*/
-    private ImageResizer mImageResizer;
+    private ImageResizer mImageFetcher;
     /**当前缓存路径*/
     private String mCacheDir;
     /**Application的Context*/
@@ -52,9 +53,11 @@ public final class ImageLoader {
     private boolean mFadeInBitmap = false;
     /** 缓存最大百分比 */
     private float mMaxCachePercent = MAX_CACHE_PERCENT;
-    /** Listener */
-    private OnProcessBitmapListener mListener;
-
+    /** 磁盘最大值 */
+    private int mMaxDiskCacheSize = 1024 * 1024 * 10; //10MB
+    /** AsyncView容器，目的是保证IAsyncView生命周期，防止被回收 */
+    private AsyncViewHolder mAsyncViewHolder;
+    
     /**
      * 构造方法
      * 
@@ -70,7 +73,7 @@ public final class ImageLoader {
     private void init() {
         final Context context = mAppContext; 
         final boolean useDiskCache = mUseDiskCache;
-        mImageResizer = new ImageResizer(context);
+        mImageFetcher = new ImageFetcher(context);
         
         if (useDiskCache) {
             if (TextUtils.isEmpty(mCacheDir)) {
@@ -80,33 +83,17 @@ public final class ImageLoader {
             ImageCacheParams params = new ImageCacheParams(new File(mCacheDir));
             //params.setMemCacheSizeCount(context, MAX_CACHE_NUM);
             params.setMemCacheSizePercent(context, mMaxCachePercent);
-            mImageResizer.addImageCache(params);
+            params.setMaxDiskCacheSize(mMaxDiskCacheSize);
+            mImageFetcher.addImageCache(params);
         } else {
             ImageCacheParams params = new ImageCacheParams(context, "cache_params");
             //params.setMemCacheSizeCount(context, MAX_CACHE_NUM);
             params.setMemCacheSizePercent(context, mMaxCachePercent);
             ImageCache imageCache = new ImageCache(params);
-            mImageResizer.setImageCache(imageCache);  
+            mImageFetcher.setImageCache(imageCache);  
         }
         
-        mImageResizer.setImageFadeIn(mFadeInBitmap);
-        mImageResizer.setOnProcessBitmapListener(new OnProcessBitmapListener() {
-            @Override
-            public Bitmap onProcessBitmap(Object data) {
-                Bitmap bitmap = null;
-                if (data instanceof ILoadImage) {
-                    bitmap = ((ILoadImage) data).loadImage();
-                }
-                
-                if (null == bitmap) {
-                    if (null != mListener) {
-                        bitmap = mListener.onProcessBitmap(data);
-                    }
-                }
-                
-                return bitmap;
-            }
-        });
+        mImageFetcher.setImageFadeIn(mFadeInBitmap);
     }
 
     /**
@@ -115,16 +102,47 @@ public final class ImageLoader {
      * @param listener listener
      */
     public void setOnLoadImageListener(OnLoadImageListener listener) {
-        mImageResizer.setOnLoadImageListener(listener);
+        mImageFetcher.setOnLoadImageListener(listener);
     }
     
     /**
-     * Set the listener.
+     * Set the listener
      * 
-     * @param listener The OnProcessBitmapListener object.
+     * @param listener The OnProcessDataListener object.
      */
-    public void setOnProcessBitmapListener(OnProcessBitmapListener listener) {
-        mListener = listener;
+    public void setOnProcessDataListener(OnProcessDataListener listener) {
+        mImageFetcher.setOnProcessDataListener(listener);
+    }
+    
+    /**
+     * 加载图片， 传入的data参数能唯一标识出一个图片文件，我们在内部会根据这个数据通过成一个key，
+     * 通过这个key来标识内存缓存中的bimap和磁盘缓存中的文件。
+     * 
+     * @param data 需要加载bitmap的数据, 通常你需要传一个图片的url或path，这个url能唯一定位这个文件。
+     * @param listener 图片加载的listener
+     * @return true/false
+     */
+    public boolean loadImage(Object data, OnLoadImageListener listener) {
+        if (null == data) {
+            return false;
+        }
+        
+        final IAsyncView imageView = new AsyncView();
+        OnLoadImageListenerWrapper listenerWrapper = new OnLoadImageListenerWrapper(listener) {
+            @Override
+            public void onFinishLoad() {
+                if (null != mAsyncViewHolder) {
+                    mAsyncViewHolder.remove(imageView);
+                }
+            }
+        };
+        
+        if (null == mAsyncViewHolder) {
+            mAsyncViewHolder = new AsyncViewHolder();
+        }
+        mAsyncViewHolder.add(imageView);
+        
+        return loadImage(data, imageView, listenerWrapper);
     }
     
     /**
@@ -138,8 +156,8 @@ public final class ImageLoader {
      * @param data 需要加载bitmap的数据, 通常你需要传一个图片的url，这个url能唯一定位这个文件。
      * @param view 需要显示图片的View
      */
-    public void loadImage(Object data, IAsyncView view) {
-        loadImage(data, view, null);
+    public boolean loadImage(Object data, IAsyncView view) {
+        return loadImage(data, view, null);
     }
     
     /**
@@ -149,8 +167,8 @@ public final class ImageLoader {
      * @param view 需要显示图片的View
      * @param listener 图片加载完成的监听器
      */
-    public void loadImage(Object data, IAsyncView view, OnLoadImageListener listener) {
-        mImageResizer.loadImage(data, view, listener);
+    public boolean loadImage(Object data, IAsyncView view, OnLoadImageListener listener) {
+        return mImageFetcher.loadImage(data, view, listener);
     }
 
     /**
@@ -160,7 +178,7 @@ public final class ImageLoader {
      * @return bitmap对象
      */
     public Bitmap getBitmapFromCache(Object data) {
-        return mImageResizer.getBitmapFromCache(data);
+        return mImageFetcher.getBitmapFromCache(data);
     }
     
     /**
@@ -172,7 +190,7 @@ public final class ImageLoader {
         if (data instanceof String) {
             if (!TextUtils.isEmpty((String) data)) {
                 //mImageResizer.clearCache((String) data);
-                mImageResizer.clearCacheInternal((String) data);
+                mImageFetcher.clearCacheInternal((String) data);
             }
         }
     }
@@ -181,7 +199,7 @@ public final class ImageLoader {
      * 清除内存中的图片对象
      */
     public void clear() {
-        mImageResizer.clearCacheInternal();
+        mImageFetcher.clearCacheInternal();
     }
     
     /**
@@ -190,7 +208,7 @@ public final class ImageLoader {
      * @return the size
      */
     public int getBitmapSizeInMemCache() {
-        return mImageResizer.getBitmapSizeInMemCache();
+        return mImageFetcher.getBitmapSizeInMemCache();
     }
     
     /**
@@ -199,7 +217,7 @@ public final class ImageLoader {
      * @param pauseWork true表示为暂停，false表示开启
      */
     public void setPauseWork(boolean pauseWork) {
-        mImageResizer.setPauseWork(pauseWork);
+        mImageFetcher.setPauseWork(pauseWork);
     }
     
     /**
@@ -250,6 +268,73 @@ public final class ImageLoader {
     }
     
     /**
+     * AsyncView holder
+     * 
+     * @author lihong06
+     * @since 2014-10-21
+     */
+    private static class AsyncViewHolder {
+        /**
+         * Holder
+         */
+        private ArrayList<IAsyncView> mHolder = new ArrayList<IAsyncView>();
+        
+        /**
+         * @param asyncView asyncView
+         */
+        public synchronized void add(IAsyncView asyncView) {
+            mHolder.add(asyncView);
+        }
+        
+        /**
+         * @param asyncView asyncView
+         */
+        public synchronized void remove(IAsyncView asyncView) {
+            mHolder.remove(asyncView);
+        }
+        
+        /**
+         */
+        public void clear() {
+            mHolder.clear();
+        }
+    }
+    
+    /**
+     * OnLoadImageListener包装类
+     * 
+     * @author lihong06
+     * @since 2014-10-21
+     */
+    private abstract static class OnLoadImageListenerWrapper implements OnLoadImageListener {
+        /**
+         * Listener
+         */
+        private OnLoadImageListener mListener;
+        
+        /**
+         * @param listener listener
+         */
+        public OnLoadImageListenerWrapper(OnLoadImageListener listener) {
+            mListener = listener;
+        }
+
+        @Override
+        public void onLoadImage(Object data, Object bitmap) {
+            if (null != mListener) {
+                mListener.onLoadImage(data, bitmap);
+            }
+            
+            onFinishLoad();
+        }
+        
+        /**
+         * Finish load
+         */
+        public abstract void onFinishLoad();
+    }
+    
+    /**
      * 创建ImageLoader的Builder类
      * 
      * @author lihong06
@@ -266,6 +351,8 @@ public final class ImageLoader {
         private boolean mFadeInBitmap = false;
         /** 缓存最大百分比 */
         private float mMaxCachePercent = MAX_CACHE_PERCENT;
+        /** 磁盘最大值 */
+        private int mMaxDiskCacheSize = 1024 * 1024 * 10; //10MB
         
         /**
          * 构造实例
@@ -325,6 +412,17 @@ public final class ImageLoader {
         }
         
         /**
+         * 设置磁盘缓存最大值
+         * 
+         * @param maxDiskCacheSize maxDiskCacheSize
+         * @return Builder对象
+         */
+        public Builder setMaxDiskCacheSize(int maxDiskCacheSize) {
+            mMaxDiskCacheSize = maxDiskCacheSize;
+            return this;
+        }
+        
+        /**
          * 创建ImageLoader的实例
          * 
          * @param context context
@@ -336,6 +434,7 @@ public final class ImageLoader {
             imageLoader.mUseDiskCache = mUseDiskCache;
             imageLoader.mMaxCachePercent = mMaxCachePercent;
             imageLoader.mFadeInBitmap = mFadeInBitmap;
+            imageLoader.mMaxDiskCacheSize = mMaxDiskCacheSize;
             imageLoader.init();
             return imageLoader;
         }

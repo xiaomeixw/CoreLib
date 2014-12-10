@@ -28,9 +28,10 @@ import android.view.View;
 import android.widget.FrameLayout;
 
 import com.lee.sdk.Configuration;
-import com.lee.sdk.res.R;
 import com.lee.sdk.cache.ImageLoader;
 import com.lee.sdk.cache.ImageWorker.OnLoadImageListener;
+import com.lee.sdk.res.R;
+import com.lee.sdk.widget.gif.GifDrawable;
 import com.lee.sdk.widget.image.ImageViewTouch.OnImageViewTouchSingleTapListener;
 import com.lee.sdk.widget.image.ImageViewTouchBase.DisplayType;
 import com.lee.sdk.widget.viewpager.OnRecycleListener;
@@ -45,13 +46,13 @@ public class ImageBrowseView extends FrameLayout implements OnRecycleListener {
     /**DEBUG*/
     private static final boolean DEBUG = Configuration.DEBUG & true;
     /**TAG*/
-    private static final String TAG = "PictureBrowseFragment";
+    private static final String TAG = "ImageBrowseView";
     /**最小的缩放率，1表示不能缩放得比原始大小还要小*/
     public static final float MIN_ZOOM = 1f;
     /**最大的缩放率，最大放大3倍*/
     public static final float MAX_ZOOM = 3f;
     /**重试次数*/
-    private static final int MAX_RETRY_LOAD_COUNT = 3;
+    private static final int MAX_RETRY_LOAD_COUNT = 0;
     
     /**图片的URL*/
     private String mImageUrl = null;
@@ -72,7 +73,7 @@ public class ImageBrowseView extends FrameLayout implements OnRecycleListener {
     /**加载bitmap的监听器*/
     private OnLoadImageListener mListener = new OnLoadImageListener() {
         @Override
-        public void onLoadImage(Object data, Bitmap bitmap) {
+        public void onLoadImage(Object data, Object bitmap) {
             if (null != bitmap) {
                 // 加载bitmap成功，隐藏加载界面
                 mLoadingLayout.setVisibility(View.INVISIBLE);
@@ -233,6 +234,15 @@ public class ImageBrowseView extends FrameLayout implements OnRecycleListener {
     @Override
     public void recycle() {
         if (null != mZoomImageView) {
+            Drawable drawable = mZoomImageView.getDrawable();
+            if (DEBUG) {
+                Log.d(TAG, "ImageBroweView#recycle(), drawable = " + drawable);
+            }
+            
+            if (drawable instanceof GifDrawable) {
+                ((GifDrawable) drawable).recycle();
+            }
+            
             mZoomImageView.setAsyncDrawable(null);
             mZoomImageView.setImageDrawable(null);
         }

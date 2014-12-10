@@ -37,6 +37,7 @@ import java.util.concurrent.atomic.AtomicInteger;
 import android.annotation.SuppressLint;
 import android.os.Build;
 import android.os.Handler;
+import android.os.Looper;
 import android.os.Message;
 import android.os.Process;
 
@@ -205,7 +206,7 @@ public abstract class AsyncTask<Params, Progress, Result> {
     private static final int CORE_POOL_SIZE = CPU_COUNT + 1;
     private static final int MAXIMUM_POOL_SIZE = CPU_COUNT * 2 + 1;
     private static final int KEEP_ALIVE = 1;
-    
+
     private static final ThreadFactory  sThreadFactory = new ThreadFactory() {
         private final AtomicInteger mCount = new AtomicInteger(1);
 
@@ -242,7 +243,10 @@ public abstract class AsyncTask<Params, Progress, Result> {
     private static final int MESSAGE_POST_RESULT = 0x1;
     private static final int MESSAGE_POST_PROGRESS = 0x2;
 
-    private static final InternalHandler sHandler = new InternalHandler();
+    /**
+     * 为防止sHandler在其他线程被初始化，添加了Looper.getMainLooper()参数，确保其关联到mainlooper
+     */
+    private static final InternalHandler sHandler = new InternalHandler(Looper.getMainLooper());
 
     private static volatile Executor sDefaultExecutor = SERIAL_EXECUTOR;
     private final WorkerRunnable<Params, Result> mWorker;
@@ -326,9 +330,11 @@ public abstract class AsyncTask<Params, Progress, Result> {
             @Override
             protected void done() {
                 try {
-                    postResultIfNotInvoked(get());
+                    postResultIfNotInvoked(super.get());
                 } catch (InterruptedException e) {
-                    android.util.Log.w(LOG_TAG, e);
+                    if (BuildConfig.DEBUG) {
+                        android.util.Log.w(LOG_TAG, e);
+                    }
                 } catch (ExecutionException e) {
                     throw new RuntimeException("An error occured while executing doInBackground()",
                             e.getCause());
@@ -665,6 +671,16 @@ public abstract class AsyncTask<Params, Progress, Result> {
     }
 
     private static class InternalHandler extends Handler {
+        
+        /**
+         * 构造函数
+         * 
+         * @param looper Looper
+         */
+        public InternalHandler(Looper looper) {
+            super(looper);
+        }
+        
         @SuppressWarnings({"unchecked", "rawtypes"})
         @Override
         public void handleMessage(Message msg) {

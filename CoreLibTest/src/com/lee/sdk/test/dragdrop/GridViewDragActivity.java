@@ -1,5 +1,6 @@
 package com.lee.sdk.test.dragdrop;
 
+import java.io.InputStream;
 import java.util.ArrayList;
 
 import android.app.ProgressDialog;
@@ -19,7 +20,7 @@ import android.widget.GridView;
 import android.widget.Toast;
 
 import com.lee.sdk.cache.ImageLoader;
-import com.lee.sdk.cache.ImageResizer.OnProcessBitmapListener;
+import com.lee.sdk.cache.ImageResizer.OnProcessDataListener;
 import com.lee.sdk.dragdrop.DragLayout;
 import com.lee.sdk.dragdrop.DragParams;
 import com.lee.sdk.dragdrop.IDragSource;
@@ -53,9 +54,19 @@ public class GridViewDragActivity extends GABaseActivity {
 
         mImageLoader = ImageLoader.Builder.newInstance(this)
                 .setMaxCachePercent(0.3f).build();
-        mImageLoader.setOnProcessBitmapListener(new OnProcessBitmapListener() {
+//        mImageLoader.setOnProcessBitmapListener(new OnProcessBitmapListener() {
+//            @Override
+//            public Bitmap onProcessBitmap(Object data) {
+//                if (data instanceof MediaInfo) {
+//                    return mSearchUtil.getImageThumbnail2((MediaInfo) data);
+//                }
+//                return null;
+//            }
+//        });
+        
+        mImageLoader.setOnProcessDataListener(new OnProcessDataListener() {
             @Override
-            public Bitmap onProcessBitmap(Object data) {
+            public Object onDecodeStream(Object data, InputStream is) {
                 if (data instanceof MediaInfo) {
                     return mSearchUtil.getImageThumbnail2((MediaInfo) data);
                 }

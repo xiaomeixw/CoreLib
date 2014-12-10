@@ -93,7 +93,7 @@ public class BounceAnimationActivity extends GABaseActivity {
 
                 bounceAnim = animatorSet;
             }
-
+            
             return bounceAnim;
         }
 
@@ -138,7 +138,7 @@ public class BounceAnimationActivity extends GABaseActivity {
         @Override
         public void onAnimationUpdate(ValueAnimator animation) {
             invalidate();
-            // long playtime = bounceAnim.getCurrentPlayTime();
+//             long playtime = bounceAnim.getCurrentPlayTime();
             // mSeekBar.setProgress((int)playtime);
         }
 

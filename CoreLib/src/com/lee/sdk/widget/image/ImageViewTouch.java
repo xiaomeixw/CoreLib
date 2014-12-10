@@ -211,7 +211,7 @@ public class ImageViewTouch extends ImageViewTouchBase {
 
         if (Math.abs(velocityX) > 800 || Math.abs(velocityY) > 800) {
             mUserScaled = true;
-            scrollBy(diffX / 2, diffY / 2, 300);
+            scrollBy(diffX / 1, diffY / 1, 300);
             invalidate();
             return true;
         }

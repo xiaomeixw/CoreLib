@@ -81,4 +81,8 @@
     <string name="title_action_bar">ActionBar</string>
     <string name="title_preference">Preference</string>
     <string name="title_webview">WebView</string>
+    <string name="title_gif">GIF</string>
+    <string name="title_gif_local">GIF Local</string>
+    <string name="title_gif_network">GIF Network</string>
+    <string name="title_lock_pattern">Lock Pattern</string>
 </resources>

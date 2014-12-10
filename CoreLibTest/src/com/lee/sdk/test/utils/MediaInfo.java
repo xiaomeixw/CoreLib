@@ -163,6 +163,11 @@ public class MediaInfo {
     public void setBytes(byte[] bytes) {
         mImageInfo.bytes = bytes;
     }
+    
+    @Override
+    public String toString() {
+        return getFullPath();
+    }
 
     @SuppressWarnings("unused")
     private static class ImageInfo {

@@ -16,9 +16,23 @@
 
 package com.lee.sdk.utils;
 
+import java.io.IOException;
+import java.io.InputStream;
+import java.util.zip.GZIPInputStream;
+
+import org.apache.http.Header;
+import org.apache.http.HttpEntity;
+import org.apache.http.HttpResponse;
+import org.apache.http.client.ClientProtocolException;
+import org.apache.http.client.HttpClient;
+import org.apache.http.client.methods.HttpGet;
+import org.apache.http.impl.client.DefaultHttpClient;
+import org.apache.http.util.EntityUtils;
+
 import android.content.Context;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
+import android.text.TextUtils;
 import android.util.Log;
 
 import com.lee.sdk.Configuration;
@@ -30,7 +44,7 @@ import com.lee.sdk.Configuration;
  * @since 2014-1-3
  */
 public final class NetUtils {
-    
+
     /** Log TAG */
     private static final String TAG = "NetUtils";
 
@@ -42,12 +56,11 @@ public final class NetUtils {
      */
     private NetUtils() {
     }
-    
+
     /**
      * 网络是否可用。(
      * 
-     * @param context
-     *            context
+     * @param context context
      * @return 连接并可用返回 true
      */
     public static boolean isNetworkConnected(Context context) {
@@ -59,12 +72,11 @@ public final class NetUtils {
         }
         return flag;
     }
-    
+
     /**
      * wifi网络是否可用
      * 
-     * @param context
-     *            context
+     * @param context context
      * @return wifi连接并可用返回 true
      */
     public static boolean isWifiNetworkConnected(Context context) {
@@ -76,26 +88,75 @@ public final class NetUtils {
             Log.d(TAG, "isWifiNetworkConnected, rtn: " + flag);
         }
         return flag;
-        
+
     }
-    
+
     /**
      * 获取活动的连接。
      * 
-     * @param context
-     *            context
+     * @param context context
      * @return 当前连接
      */
     private static NetworkInfo getActiveNetworkInfo(Context context) {
         if (context == null) {
             return null;
         }
-        ConnectivityManager connectivity = (ConnectivityManager) context
-                .getSystemService(Context.CONNECTIVITY_SERVICE);
+        ConnectivityManager connectivity = (ConnectivityManager) context.getSystemService(Context.CONNECTIVITY_SERVICE);
         if (connectivity == null) {
             return null;
         }
         return connectivity.getActiveNetworkInfo();
     }
 
+    /**
+     * 从网上获取内容get方式
+     * 
+     * @param url url
+     * @return string
+     * @throws IOException IOException
+     * @throws ClientProtocolException ClientProtocolException
+     */
+    public static String getStringFromUrl(String url) throws ClientProtocolException, IOException {
+        HttpGet get;
+        try {
+            get = new HttpGet(url);
+        } catch (IllegalArgumentException e) {
+            e.printStackTrace();
+            return null;
+        }
+        HttpClient client = new DefaultHttpClient();
+        HttpResponse response = client.execute(get);
+        if (response != null) {
+            HttpEntity entity = response.getEntity();
+            if (entity != null) {
+                return EntityUtils.toString(entity, "UTF-8");
+            }
+        }
+        return null;
+    }
+
+    /**
+     * 根据server下发的Content-Encoding，获取适当的inputstream.当content-encoding为gzip时，返回GzipInputStream
+     * 否则返回原有的inputStream
+     * 
+     * @param resEntity {@link HttpEntity}
+     * @return InputStream or null
+     * @throws IOException {@link IOException}
+     */
+    public static InputStream getSuitableInputStream(HttpEntity resEntity) throws IOException {
+        if (resEntity == null) {
+            return null;
+        }
+        InputStream inputStream = resEntity.getContent();
+        if (inputStream != null) {
+            Header header = resEntity.getContentEncoding();
+            if (header != null) {
+                String contentEncoding = header.getValue();
+                if (!TextUtils.isEmpty(contentEncoding) && contentEncoding.toLowerCase().indexOf("gzip") > -1) {
+                    inputStream = new GZIPInputStream(inputStream);
+                }
+            }
+        }
+        return inputStream;
+    }
 }

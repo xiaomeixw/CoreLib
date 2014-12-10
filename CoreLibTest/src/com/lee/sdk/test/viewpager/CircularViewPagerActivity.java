@@ -2,6 +2,7 @@ package com.lee.sdk.test.viewpager;
 
 import java.util.ArrayList;
 
+import android.graphics.Color;
 import android.os.Bundle;
 import android.support.v4.view.ViewPager.OnPageChangeListener;
 import android.util.Log;
@@ -57,6 +58,7 @@ public class CircularViewPagerActivity extends BaseFragmentActivity {
             protected View onInstantiateItem(ViewGroup container, int position) {
                 TextView textView = new TextView(CircularViewPagerActivity.this);
                 textView.setTextSize(30);
+                //textView.setBackgroundColor(Color.RED);
                 textView.setGravity(Gravity.CENTER);
                 return textView;
             }
@@ -71,7 +73,7 @@ public class CircularViewPagerActivity extends BaseFragmentActivity {
             }
         };
         
-        int initPos = 1;
+        int initPos = 0;
         mCircularViewPager.setAdapter(adapter);
         mCircularViewPager.setCurrentItem(adapter.getCount() / 2 + initPos, false);
         mPointPageIndicator.setViewPager(mCircularViewPager, initPos);
@@ -100,5 +102,20 @@ public class CircularViewPagerActivity extends BaseFragmentActivity {
                 
             }
         });
+        
+        //post(mAction);
     }
+    
+    private void post(Runnable runable) {
+        mCircularViewPager.postDelayed(mAction, 1000);
+    }
+    
+    private Runnable mAction = new Runnable() {
+        @Override
+        public void run() {
+            int item = mCircularViewPager.getCurrentItem() + 1;
+            mCircularViewPager.setCurrentItem(item, true);
+            post(this);
+        }
+    };
 }

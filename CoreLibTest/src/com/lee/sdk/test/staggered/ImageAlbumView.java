@@ -117,4 +117,9 @@ public class ImageAlbumView extends FrameLayout implements IAsyncView {
     public Drawable getAsyncDrawable() {
         return mDrawable;
     }
+    
+    @Override
+    public boolean isGifSupported() {
+        return false;
+    }
 }

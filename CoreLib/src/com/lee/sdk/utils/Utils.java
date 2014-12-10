@@ -32,8 +32,12 @@ import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 import java.util.List;
 import java.util.regex.Matcher;
+import java.util.zip.GZIPInputStream;
 
-import com.lee.sdk.Configuration;
+import org.apache.http.Header;
+import org.apache.http.HttpEntity;
+import org.apache.http.impl.client.DefaultHttpClient;
+import org.apache.http.params.HttpConnectionParams;
 
 import android.app.Activity;
 import android.content.ComponentName;
@@ -54,6 +58,8 @@ import android.util.Log;
 import android.util.Patterns;
 import android.view.View;
 import android.view.inputmethod.InputMethodManager;
+
+import com.lee.sdk.Configuration;
 
 /**
  * 
@@ -857,4 +863,94 @@ public class Utils {
         }
         return bRet;
     }
+    
+    /**
+    * 创建一个 http client。
+    * 
+    * @param context
+    *            Context.
+    * @return ProxyHttpClient
+    */
+   public static DefaultHttpClient createHttpClient(Context context) {
+       DefaultHttpClient httpclient = new DefaultHttpClient();
+       // httpclient.getParams().setParameter("Accept-Encoding", "gzip");
+       
+       final int httpTimeout = 30000;
+       final int socketTimeout = 50000;
+       HttpConnectionParams.setConnectionTimeout(httpclient.getParams(),
+               httpTimeout);
+       HttpConnectionParams
+               .setSoTimeout(httpclient.getParams(), socketTimeout);
+       return httpclient;
+   }
+   
+   /**
+    * 根据server下发的Content-Encoding，获取适当的inputstream.当content-encoding为gzip时，返回GzipInputStream
+    * 否则返回原有的inputStream
+    * 
+    * @param resEntity
+    *            {@link HttpEntity}
+    * @return InputStream or null
+    * @throws IOException
+    *             {@link IOException}
+    */
+   public static InputStream getSuitableInputStream(HttpEntity resEntity) throws IOException {
+       if (resEntity == null) {
+           return null;
+       }
+       InputStream inputStream = resEntity.getContent();
+       if (inputStream != null) {
+           Header header = resEntity.getContentEncoding();
+           if (header != null) {
+               String contentEncoding = header.getValue();
+               if (!TextUtils.isEmpty(contentEncoding) && contentEncoding.toLowerCase().indexOf("gzip") > -1) {
+                   inputStream = new GZIPInputStream(inputStream);
+               }
+           }
+       }
+       return inputStream;
+   }
+   
+   /**
+    * 将URL转换成一个唯一的值，返回的字符串会带上后缀（如果URL中有的话）
+    * 
+    * @param url URL
+    * @return 经过MD5过后的字符串
+    */
+   public static String getHashedString(String url) {
+       return getHashedString(url, true);
+   }
+   
+   /**
+    * 将URL转换成一个唯一的值，返回的字符串会带上后缀（如果URL中有的话）
+    * 
+    * @param url URL
+    * @param appendSuffix 是否追加URL中截取的后缀
+    * @return 经过MD5过后的字符串
+    */
+   public static String getHashedString(String url, boolean appendSuffix) {
+       if (url == null || url.endsWith("/")) {
+           return null;
+       }
+
+       String suffix = appendSuffix ? getSuffix(url) : null;
+       StringBuilder sb = null;
+       
+       try {
+           MessageDigest digest = MessageDigest.getInstance("MD5");
+           byte[] dstbytes = digest.digest(url.getBytes("UTF-8")); // GMaFroid uses UTF-16LE
+           sb = new StringBuilder();
+           for (int i = 0; i < dstbytes.length; i++) {
+               sb.append(Integer.toHexString(dstbytes[i] & 0xff));// SUPPRESS CHECKSTYLE
+           }
+       } catch (Exception e) {
+           e.printStackTrace();
+       }
+
+       if (null != sb && null != suffix) {
+           return sb.toString() + "." + suffix;
+       }
+      
+       return (null != sb) ? sb.toString() : null;
+   }
 }

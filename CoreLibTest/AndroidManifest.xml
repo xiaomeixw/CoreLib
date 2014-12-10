@@ -246,7 +246,7 @@
 
         <activity
             android:name=".scrollbar.ScrollBarActivity"
-             >
+            android:label="@string/title_scrollbar">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
                 <category android:name="com.lee.sdk.test.intent.category.ANDROIDDEMO" />
@@ -254,15 +254,15 @@
         </activity>
         <activity
             android:name=".scrollbar.ScrollViewBarActivity"
-            >
+            android:label="@string/title_scrollbar_scrollview">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
-                <category android:name="com.nj1s.lib.test.intent.category.SCROLLBAR" />
+                <category android:name="com.lee.sdk.test.intent.category.SCROLLBAR" />
             </intent-filter>
         </activity>
         <activity
             android:name=".scrollbar.ListViewBarActivity"
-             >
+            android:label="@string/title_scrollbar" >
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
                 <category android:name="com.nj1s.lib.test.intent.category.SCROLLBAR" />
@@ -378,6 +378,41 @@
             </intent-filter>
         </activity>
         
+        <activity
+            android:name="com.lee.sdk.test.gif.GifTestActivity"
+            android:label="@string/title_gif" >
+            <intent-filter>
+                <action android:name="android.intent.action.MAIN" />
+                <category android:name="com.lee.sdk.test.intent.category.ANDROIDDEMO" />
+            </intent-filter>
+        </activity>
+        
+        <activity
+            android:name="com.lee.sdk.test.gif.GifLocalActivity"
+            android:label="@string/title_gif_local" >
+            <intent-filter>
+                <action android:name="android.intent.action.MAIN" />
+                <category android:name="com.lee.sdk.test.intent.category.GIF" />
+            </intent-filter>
+        </activity>
+        
+        <activity
+            android:name="com.lee.sdk.test.gif.GifNetworkActivity"
+            android:label="@string/title_gif_network" >
+            <intent-filter>
+                <action android:name="android.intent.action.MAIN" />
+                <category android:name="com.lee.sdk.test.intent.category.GIF" />
+            </intent-filter>
+        </activity>
+        
+        <activity
+            android:name="com.lee.sdk.test.lock.LockPatternActivity"
+            android:label="@string/title_lock_pattern" >
+            <intent-filter>
+                <action android:name="android.intent.action.MAIN" />
+                <category android:name="com.lee.sdk.test.intent.category.ANDROIDDEMO" />
+            </intent-filter>
+        </activity>
         
     </application>
 

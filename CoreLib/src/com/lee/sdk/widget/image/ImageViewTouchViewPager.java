@@ -36,7 +36,7 @@ public class ImageViewTouchViewPager extends ViewPager {
     private ImagePagerAdapter mAdapter;
     /** Listener */
     private OnPageChangeListener mPageChangeListener;
-
+    
     /**
      * 构造方法
      * 

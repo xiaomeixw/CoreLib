@@ -147,6 +147,11 @@ public class ZoomImageView extends ImageViewTouch implements IAsyncView {
         return mAsyncDrawable;
     }
     
+    @Override
+    public boolean isGifSupported() {
+        return true;
+    }
+    
     /**
      * Set the bitmap to the View.
      * 
@@ -174,8 +179,7 @@ public class ZoomImageView extends ImageViewTouch implements IAsyncView {
             mListener.onSetImageDrawable(drawable);
         }
         
-        super.setImageDrawable(drawable);
-        
+        super.setImageDrawable(drawable, null, mMinZoom, mMaxZoom);
         mHasSetBitmap = (drawable != null);
     }
     

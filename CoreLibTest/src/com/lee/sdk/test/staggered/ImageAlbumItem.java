@@ -5,8 +5,10 @@
 package com.lee.sdk.test.staggered;
 
 import java.util.ArrayList;
+import java.util.Map;
 
 import android.graphics.Bitmap;
+import android.graphics.BitmapFactory.Options;
 
 import com.lee.sdk.cache.ILoadImage;
 
@@ -168,5 +170,19 @@ public class ImageAlbumItem implements ILoadImage {
         }
         
         return null;
+    }
+
+    @Override
+    public int getSampleSize(Options options) {
+        return 0;
+    }
+
+    @Override
+    public Map<String, String> getHeader() {
+        return null;
+    }
+    
+    public String toString() {
+        return getUrl();
     }
 }

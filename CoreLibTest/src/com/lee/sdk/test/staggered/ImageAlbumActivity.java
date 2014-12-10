@@ -4,7 +4,6 @@ import java.util.ArrayList;
 
 import android.app.ProgressDialog;
 import android.content.Context;
-import android.graphics.Bitmap;
 import android.graphics.Color;
 import android.graphics.drawable.ColorDrawable;
 import android.os.Bundle;
@@ -12,7 +11,6 @@ import android.util.Log;
 import android.view.View;
 
 import com.lee.sdk.cache.ImageLoader;
-import com.lee.sdk.cache.ImageResizer.OnProcessBitmapListener;
 import com.lee.sdk.task.Task;
 import com.lee.sdk.task.Task.RunningStatus;
 import com.lee.sdk.task.TaskManager;
@@ -44,16 +42,16 @@ public class ImageAlbumActivity extends GABaseActivity {
                 .setDiskCacheDir(Utils.getImageCacheDirectory(this))
                 .setFadeInBitmap(true)
                 .setMaxCachePercent(0.3f).build();
-        mImageLoader.setOnProcessBitmapListener(new OnProcessBitmapListener() {
-            @Override
-            public Bitmap onProcessBitmap(Object data) {
-                if (data instanceof String) {
-                    return Utils.getBitmapFromNet((String) data, 1, "", "");
-                }
-
-                return null;
-            }
-        });
+//        mImageLoader.setOnProcessBitmapListener(new OnProcessBitmapListener() {
+//            @Override
+//            public Bitmap onProcessBitmap(Object data) {
+//                if (data instanceof String) {
+//                    return Utils.getBitmapFromNet((String) data, 1, "", "");
+//                }
+//
+//                return null;
+//            }
+//        });
 
         ImageAlbumAdapter adapter = new ImageAlbumAdapter(this);
         adapter.setImageLoader(mImageLoader);

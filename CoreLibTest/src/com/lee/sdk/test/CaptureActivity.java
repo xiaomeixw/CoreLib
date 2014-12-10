@@ -20,6 +20,7 @@ import android.widget.FrameLayout;
 import android.widget.ImageView;
 import android.widget.ImageView.ScaleType;
 import android.widget.LinearLayout;
+import android.widget.TextView;
 
 import com.lee.sdk.utils.Utils;
 
@@ -32,10 +33,12 @@ public class CaptureActivity extends GABaseActivity {
 
         FrameLayout layout = new FrameLayout(this);
 
-        Button btn = new Button(this);
+        TextView btn = new TextView(this);
         int width = (int) Utils.pixelToDp(this, 150);
         btn.setLayoutParams(new FrameLayout.LayoutParams(width, -2));
-        btn.setText("Clip Bitmap");
+        btn.setTextSize(40.f);
+        btn.setBackgroundColor(Color.RED);
+        //btn.setText("Clip Bitmap");
 
         Button btn2 = new Button(this);
         btn2.setLayoutParams(new FrameLayout.LayoutParams(width, -2));

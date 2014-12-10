@@ -16,6 +16,8 @@
 
 package com.lee.sdk.cache;
 
+import java.io.InputStream;
+
 import android.content.Context;
 import android.graphics.Bitmap;
 
@@ -26,40 +28,66 @@ import android.graphics.Bitmap;
  * and height. Useful for when the input images might be too large to simply load directly into
  * memory.
  */
-public class ImageResizer extends ImageWorker {
-
+public abstract class ImageResizer extends ImageWorker {
     // Added by LiHong at 2012/10/25 begin ===========
     /**
      * This interface defines the methods for caller to load bitmap from the specified data. 
      * 
      * @author Li Hong
      */
-    public interface OnProcessBitmapListener  {
-        
+    public interface OnProcessBitmapListener {
         /**
          * Process the passed data and return the bitmap.
          * 
          * @param data The data which you set the the image worker.
-         * 
          * @return the bitmap object.
          */
-        Bitmap onProcessBitmap(Object data);
+        public Bitmap onProcessBitmap(Object data);
     }
     
     /**
-     * The listener.
+     * This interface defines the methods for caller to fetch input stream from the specified data. 
+     * 
+     * @author lihong06
+     * @since 2014-10-13
      */
-    protected OnProcessBitmapListener mListener;
+    public interface OnProcessDataListener {
+        /**
+         * Process the passed data and return the input stream.
+         * 
+         * @param data The data which you set the the image worker.
+         * @return the bitmap or drawable
+         */
+        public Object onDecodeStream(Object data, InputStream is);
+    }
 
+    /**
+     * The OnProcessBitmapListener.
+     */
+    protected OnProcessBitmapListener mExternalBitmapListener;
+    
+    /**
+     * OnProcessDataListener
+     */
+    protected OnProcessDataListener mExternalDataListener;
+    
     /**
      * Set the listener.
      * 
      * @param listener The OnProcessBitmapListener object.
      */
     public void setOnProcessBitmapListener(OnProcessBitmapListener listener) {
-        mListener = listener;
+        mExternalBitmapListener = listener;
     }
     
+    /**
+     * Set the listener
+     * 
+     * @param listener The OnProcessDataListener object.
+     */
+    public void setOnProcessDataListener(OnProcessDataListener listener) {
+        mExternalDataListener = listener;
+    }
     // Added by LiHong at 2012/10/25 end =============
     
     /**
@@ -69,19 +97,6 @@ public class ImageResizer extends ImageWorker {
      */
     public ImageResizer(Context context) {
         super(context);
-    }
-
-    /**
-     * @see com.baidu.searchbox.discovery.picture.cache.ImageWorker#processBitmap(java.lang.Object)
-     */
-    @Override
-    protected Bitmap processBitmap(Object data) {
-        
-        if (null != mListener) {
-            return mListener.onProcessBitmap(data);
-        }
-        
-        return null;
     }
 }
 //CHECKSTYLE:ON
